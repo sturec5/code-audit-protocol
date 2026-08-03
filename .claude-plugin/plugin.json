@@ -1,0 +1,19 @@
+{
+  "name": "audit-protocol",
+  "description": "Audit a change against 54 failure classes with tiers, a finding standard, and change triage. Domain overlays run first and force critical-path treatment.",
+  "version": "1.0.0",
+  "author": {
+    "name": "sturec5"
+  },
+  "license": "MIT",
+  "keywords": [
+    "audit",
+    "code-review",
+    "quality",
+    "checklist",
+    "security"
+  ],
+  "skills": [
+    "./skills/audit-protocol"
+  ]
+}

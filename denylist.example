@@ -1,0 +1,35 @@
+# denylist.example — copy to denylist.local and replace with your own terms.
+#
+#   cp denylist.example denylist.local
+#
+# denylist.local is gitignored. The terms you are trying to keep out of a
+# public repository are themselves the sensitive part, so they live in an
+# untracked file and check.sh reads them from there.
+#
+# Sourced as shell, so each variable is a single-quoted extended-regex blob.
+# Newlines and spaces are stripped, so lay it out however reads best.
+# An empty string disables that scan.
+
+# Case-insensitive. Repository names, service codenames, internal tools,
+# people and agent names, and any domain vocabulary specific enough to
+# identify the origin of the text.
+INSENSITIVE='
+internal-repo-name|service-codename|legacy-system-name
+\bteammate-name\b|\borg-name\b
+domain-term-one|domain-term-two|domain-term-three
+path/to/internal/module|internal_entry_point\.py
+'
+
+# Case-sensitive. Terms whose lowercase form is ordinary English and would
+# otherwise fire on innocent prose.
+SENSITIVE='Tier A|ACRONYM'
+
+# Measured figures from the private work. A published number turns an
+# unfalsifiable claim into a fingerprint.
+NUMBERS='\b12,?345\b|\b67 findings\b'
+
+# Letters outside ASCII that would reveal your working language. List only
+# the letters specific to it — a blanket non-ASCII test fires on em dashes,
+# arrows and typographic quotes, which are fine in English text.
+# Empty by default so the check is opt-in.
+LOCALE_CHARS=''
