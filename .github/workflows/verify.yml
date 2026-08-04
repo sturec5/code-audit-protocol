@@ -11,3 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 .github/verify.py
+      # The gate's own fail-open cases. Its term list is untracked by design,
+      # so CI cannot run check.sh against this repository — but it can prove
+      # the gate still fails when it should.
+      - run: ./check_test.sh

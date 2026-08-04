@@ -9,6 +9,14 @@
 # Run before every push. Exit 0 means the mechanical check passed — it does not
 # mean the text is clean. A human still reads it.
 #
+# What it does NOT look at, stated so the pass is not read as wider than it is:
+#   - git history. A term scrubbed from the working tree is still published,
+#     because a push transfers reachable history. Check that separately before
+#     making a repository public.
+#   - binary files. grep -I skips them, so a project name in PDF text or image
+#     metadata passes.
+#   - anything gitignored, which includes denylist.local itself.
+#
 #   ./check.sh          scan the repo
 #   ./check.sh --list   print the patterns and exit
 
@@ -16,8 +24,11 @@ set -uo pipefail
 cd "$(dirname "$0")" || exit 2
 
 # Bracket expressions match bytes rather than characters under a non-UTF-8
-# locale, so a multi-byte punctuation mark can match a single-byte class.
-export LC_ALL="${LC_ALL:-en_US.UTF-8}"
+# locale, so a multi-byte punctuation mark can match a single-byte class. Set
+# unconditionally: `${LC_ALL:-...}` leaves an inherited LC_ALL=C in place, which
+# is exactly the CI case this guard exists for. C.UTF-8 is present on macOS,
+# glibc, and musl; en_US.UTF-8 is not.
+export LC_ALL=C.UTF-8
 
 # The terms themselves are the sensitive part, so they are not in this file.
 # denylist.local is gitignored; denylist.example shows the format.
@@ -48,10 +59,26 @@ PAT_S=$(flatten "$SENSITIVE")
 PAT_N=$(flatten "$NUMBERS")
 PAT_L=$(flatten "$LOCALE_CHARS")
 
-if [ "${1:-}" = "--list" ]; then
-  printf 'case-insensitive:\n  %s\n\ncase-sensitive:\n  %s\n\nnumbers:\n  %s\n\nlocale:\n  %s\n' \
-    "$PAT_I" "$PAT_S" "$PAT_N" "$PAT_L"
-  exit 0
+case "${1:-}" in
+  --list)
+    # Prints the real terms. Never run this where the output is captured — a
+    # CI log is read by more people than the repository is.
+    printf 'case-insensitive:\n  %s\n\ncase-sensitive:\n  %s\n\nnumbers:\n  %s\n\nlocale:\n  %s\n' \
+      "$PAT_I" "$PAT_S" "$PAT_N" "$PAT_L"
+    exit 0
+    ;;
+  '') ;;
+  *)
+    printf 'check.sh: unknown argument %s\n\n  ./check.sh          scan\n  ./check.sh --list   print the patterns\n' "$1"
+    exit 2
+    ;;
+esac
+
+# Every pattern empty means nothing was configured. Reporting that as a pass is
+# the same lie as passing over zero files.
+if [ -z "$PAT_I$PAT_S$PAT_N$PAT_L" ]; then
+  printf 'check.sh: denylist.local configures no patterns. Nothing would be checked.\n'
+  exit 2
 fi
 
 # denylist.example is excluded for the same reason check.sh itself is: it
@@ -60,7 +87,10 @@ fi
 # Untracked-but-not-ignored files are included: work you have written but not
 # staged yet is exactly when a leak is most likely, and denylist.local stays
 # out because it is gitignored.
-FILES=$(git ls-files --cached --others --exclude-standard 2>/dev/null \
+# core.quotePath=false: by default git C-quotes any non-ASCII path, producing a
+# string that names no file. The scan would then fail on exactly the files a
+# non-English-text check most needs to read.
+FILES=$(git -c core.quotePath=false ls-files --cached --others --exclude-standard 2>/dev/null \
         | grep -vE '^(check\.sh|LICENSE|denylist\.example)$')
 if [ -z "$FILES" ]; then
   printf 'check.sh: not a git checkout — falling back to *.md and *.json only\n'
@@ -83,7 +113,7 @@ scan() { # label, pattern, grep-flags
   # which is the one failure this gate must never produce.
   hits=$(grep -n $flags -E -- "$pattern" "${FILE_LIST[@]}"); rc=$?
   if [ "$rc" -ge 2 ]; then
-    printf '\n  %s — SCAN DID NOT RUN (grep rejected the pattern)\n' "$label"
+    printf '\n  %s — SCAN DID NOT RUN (bad pattern, or a listed file could not be read)\n' "$label"
     fail=2
     return
   fi
