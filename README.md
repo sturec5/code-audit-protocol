@@ -1,39 +1,47 @@
 # The Audit Protocol
 
-A 54-phase, technology-neutral audit taxonomy for finding the defects that
-feature testing misses — plus a way to pin the failures that are specific to
-*your* system, which is the part generic checklists structurally cannot cover.
-
-Written for people who direct coding agents and need the review to be
-repeatable rather than a matter of how the model felt that day.
+A checklist your coding agent runs before you ship — plus a way to write down
+the two or three things that would be a genuine disaster **in your project
+specifically**.
 
 > Community project. Not affiliated with or endorsed by Anthropic.
 
-## The problem with audit checklists
+## The 60-second version
 
-They come in two kinds and both fail.
+You changed some code. Before it ships, something should ask *what did I miss?*
 
-**Generic ones transfer but find nothing.** A list that applies to every
-codebase asks about error handling and input validation. It never asks whether
-this particular payment can charge twice, because it cannot know that.
+This repo gives your agent two things.
 
-**Project-specific ones find plenty but transfer to nothing.** They encode real
-scars, which is why they work — and why they are useless to anyone else, and
-useless to you the moment the project changes shape.
+**1. A list of 54 ways software breaks.** A number that rounds the wrong way.
+One user reading another user's data. A test that would pass even against
+broken code. A migration that works on an empty database and locks up on a real
+one. These are the same in every codebase, which is why the list is worth
+keeping.
 
-This repository splits the two apart.
+**2. A short file where you write down your own disasters.** The generic list
+cannot know that in *your* app the thing that ends you is a payment charged
+twice. So you write that down yourself — six to eight lines. That file is
+called an **overlay**.
 
-| Layer | What it is | Does it transfer? |
-| --- | --- | --- |
-| [`AUDIT_PROTOCOL.md`](AUDIT_PROTOCOL.md) | 54 phases of failure classes, each tagged `[CORE]`, `[CONDITIONAL]`, or a scoped core tag, with tiers, a finding standard, and a change-triage table | Yes — unchanged, across languages and stacks |
-| [`OVERLAY_TEMPLATE.md`](OVERLAY_TEMPLATE.md) | The six-to-eight invariants that are specific to your system | No — and that is the point |
+Then one rule connects them: **the overlay wins.** Any change that touches it
+gets the full treatment, however small the change looks.
 
-An overlay runs **before** the generic phases, forces the change to **T3**
-regardless of how small the diff looks, and its violations are **Blockers by
-definition**. That inversion — domain first, generic second — is the whole
-idea.
+## Why `AUDIT_PROTOCOL.md` is 1,400 lines — and why you should not read it
 
-## Quick start
+**You are not the reader. Your agent is.**
+
+It is long the way a dictionary is long: exhaustive on purpose, opened a few
+entries at a time, never read front to back. Each of the 54 phases is a way
+something actually broke for somebody. Writing them all down is the point.
+Reading them all is not.
+
+What you read is this page. Then you hand the file to your agent, and it uses
+the triage table inside to pick the four or five phases your change actually
+needs — an accessibility fix does not get the database phases.
+
+**If you never open `AUDIT_PROTOCOL.md`, this still works.**
+
+## Try it in one minute
 
 ```bash
 curl -O https://raw.githubusercontent.com/sturec5/claude-audit-protocol/main/AUDIT_PROTOCOL.md
@@ -47,69 +55,105 @@ Pick the tier and the phases from the change-triage table, tell me which
 phases you skipped and why, and report findings in the finding standard.
 ```
 
-As a Claude Code plugin, available in every project:
+Or install it as a Claude Code plugin, available in every project:
 
 ```
 /plugin marketplace add sturec5/claude-audit-protocol
 /plugin install audit-protocol@claude-audit-protocol
 ```
 
-## Writing your overlay
+**New here?** [`HOWTO.md`](HOWTO.md) walks through one real example end to end —
+run an audit, read the output, write your first overlay, see what changes.
+Fifteen minutes.
 
-Start from the failure, not the feature. "Checkout flow" is a feature.
-"Money moved twice" is a failure class, and it survives the refactor that
-renames checkout.
+## The one idea worth understanding: overlays
 
-Three worked examples ship here — read them for the shape, then throw them away
-and write your own:
+Say you run a store. You change one line in the shipping-address form — a
+label, basically. Trivial.
 
-- [`overlays/payments.md`](overlays/payments.md) — money moved twice, moved wrong, or not moved at all
-- [`overlays/access-control.md`](overlays/access-control.md) — one principal reaching another's data or privileges
-- [`overlays/data-pipeline.md`](overlays/data-pipeline.md) — leakage, non-determinism, and silent schema drift
+Except that form writes to the order record, and the order record is what the
+payment retry reads. Your overlay says: *money must never move twice.* So this
+one-line change is now a critical-path review — not because the diff is big,
+but because of **what it touches**.
 
-Each invariant is a claim that can be proved yes or no with named evidence. If
-the only proof is "I read it and it looked right", it is not an invariant yet.
+That inversion is the whole idea:
 
-## What is here
+> Risk comes from what a change touches, not from how many lines it has.
 
-```
-AUDIT_PROTOCOL.md        the 54 phases, tiers, finding standard, change triage
-OVERLAY_TEMPLATE.md      how to write your own domain overlay
-overlays/                three worked examples
-templates/FINDING.md     one finding, every field, with a worked example
-templates/AUDIT_STATUS.md   the standing "can this ship right now" record
-check.sh                 denylist scanner used to keep this repo generic
-denylist.example         template for the scanner's term list
-.claude-plugin/, skills/    the Claude Code plugin wrapper
-```
+A generic checklist cannot do this. It does not know what your disaster is.
+You do — so you write it down once, and every future change gets measured
+against it.
 
-## Three rules that make the difference
+This is also why the two files are separate. The 54 phases transfer to any
+project unchanged. Your overlay transfers to nobody, and that is exactly the
+point: it is the part that knows something the generic list never can.
 
-**An unrun checklist is not evidence a system is safe.** The protocol is a list
-of questions, not a certificate. Phases you skipped get recorded as skipped,
-with the reason.
+## What an overlay actually looks like
 
-**A green suite does not prove the test is meaningful.** Phases 31 and 39 exist
-to check the tests themselves, because a passing assertion that would also pass
+Each entry is a claim that can be proved yes or no. Not "review the payment
+code" — that is a wish. This is an invariant:
+
+> **A retried request must not create a second charge.**
+>
+> **Prove it:** send the same request twice with the same idempotency key and
+> show one charge in the ledger.
+>
+> **Violation looks like:** the key is generated inside the retry loop; the
+> ledger has no uniqueness constraint; a webhook handler that trusts delivery
+> order.
+
+Start from the failure, not the feature. "Checkout flow" is a feature. "Money
+moved twice" is a failure class, and it survives the refactor that renames
+checkout.
+
+Three worked examples ship here — [payments](overlays/payments.md) (7
+invariants), [access-control](overlays/access-control.md),
+[data-pipeline](overlays/data-pipeline.md). Read one for the shape, then throw
+them away and write yours, starting from
+[`OVERLAY_TEMPLATE.md`](OVERLAY_TEMPLATE.md).
+
+If the only proof you can offer is "I read it and it looked right", it is not
+an invariant yet.
+
+## What is in here
+
+| File | Who reads it |
+| --- | --- |
+| `README.md` | You. What this is and why. |
+| [`HOWTO.md`](HOWTO.md) | You. One worked example, start to finish. Read this second. |
+| [`AUDIT_PROTOCOL.md`](AUDIT_PROTOCOL.md) | Your agent. 54 phases, tiers, finding standard, triage table. |
+| [`OVERLAY_TEMPLATE.md`](OVERLAY_TEMPLATE.md) | You, once — when you write your first overlay. |
+| [`overlays/`](overlays/) | Three worked examples, for reference. |
+| [`templates/`](templates/) | Report formats: one finding, and the standing "can this ship?" record. |
+| `check.sh`, `denylist.example` | Only if you fork this and publish your own version. |
+| `.claude-plugin/`, `skills/` | The Claude Code plugin wrapper. |
+
+## Three things that make it worth using
+
+**An unrun checklist is not evidence that anything is safe.** This is a list of
+questions, not a certificate. Phases you skip get recorded as skipped, with the
+reason — so "we did not check that" never quietly becomes "that is fine".
+
+**A green test suite does not prove the tests mean anything.** Two phases exist
+to audit the tests themselves, because an assertion that would also pass
 against broken code is worse than no assertion.
 
-**Never report a hunch as a defect.** Every finding carries evidence, a
-confirmed-or-plausible status, impact, and the smallest reproduction. A
-finding that is neither CONFIRMED nor labeled PLAUSIBLE is a rumor with an ID
-number.
+**A hunch is not a defect.** Every finding carries evidence, a reproduction,
+and a status: CONFIRMED if it was reproduced, PLAUSIBLE if it was only reasoned
+about. A finding with neither is a rumor with an ID number.
 
 ## Where this came from
 
 Distilled from audit protocols used across several production codebases — a
 user-facing web application, a real-time service, and a data-processing system.
-The phases in the original grew one at a time, each added after something got
-through that nothing on the list would have caught.
+The phase list grew one entry at a time, each added after something got through
+that nothing on the list would have caught.
 
-The expansion phases (47-54: security, authorization, storage and recovery,
-privacy, accessibility, UX, observability, delivery) are grounded in public
-standards rather than one project's habits — OWASP ASVS and API Top 10, the
-NIST Privacy Framework and SSDF, WCAG 2.2, and the Google SRE material on
-service level objectives. Sources are cited at the end of the protocol.
+The last eight phases — security, authorization, storage and recovery, privacy,
+accessibility, UX, observability, delivery — are grounded in public standards
+rather than one team's habits: OWASP ASVS and API Top 10, the NIST Privacy
+Framework and SSDF, WCAG 2.2, and the Google SRE material on service level
+objectives. Every source is cited at the end of the protocol.
 
 Nothing project-specific ships here. [`check.sh`](check.sh) is the gate that
 keeps it that way; run it before every push. Its term list lives in an
@@ -119,8 +163,8 @@ keeps them out. [`denylist.example`](denylist.example) shows the format.
 
 ## Contributing
 
-Overlays for failure classes not yet covered are the most useful contribution —
-see [CONTRIBUTING.md](CONTRIBUTING.md). New phases are a higher bar: a phase
-earns its place only when a real failure class has no existing home.
+An overlay for a failure class nobody has covered yet is the most useful
+contribution — see [CONTRIBUTING.md](CONTRIBUTING.md). A new phase is a higher
+bar: it earns its place only when a real failure class has no existing home.
 
-MIT licensed. Use it, fork it, strip the parts you do not need.
+MIT licensed. Use it, fork it, delete the parts you do not need.

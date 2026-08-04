@@ -173,6 +173,91 @@ invariants, not theirs.
 
 ---
 
+## How to read this file
+
+The numbers are a **catalogue, not a running order.** Nobody runs 54 phases.
+Your change selects a handful through the triage table in §4, and the tier in
+§2 sets how deep each one goes.
+
+Three things about the order:
+
+- **Phase 24 (smoke test) runs first**, whatever else you selected. A build
+  that does not start makes every later phase a guess.
+- **Some phases deepen an earlier one** rather than covering new ground. They
+  are separate because they cost more and are not always worth it: 22 deepens
+  14, 23 and 36 deepen 4, 29 adds regressions for 6, 39 triages what 31 found,
+  43 and 44 extend 26. Run the shallow one at T2, add the deep one at T3.
+- **Everything else is unordered.** Start with the highest-risk execution path,
+  not with phase 1.
+
+## Phase index
+
+`core` runs on any code change · `cond` runs only when the application has
+that behavior · `scoped` is core for one kind of change (bug fix, user
+interface, release).
+
+**Engineering phases**
+
+1. [Syntax, Build, And Immediate Runtime Failures](#1-syntax-build-and-immediate-runtime-failures-core) · core
+2. [Static Analysis, Types, And Dead Code](#2-static-analysis-types-and-dead-code-core) · core
+3. [Business Logic, Rules, And Formula Correctness](#3-business-logic-rules-and-formula-correctness-core) · core
+4. [Input Boundaries And Edge Cases](#4-input-boundaries-and-edge-cases-core) · core
+5. [State, Mutation, Lifecycle, And Caching](#5-state-mutation-lifecycle-and-caching-core) · core
+6. [Time, Ordering, And Temporal Correctness](#6-time-ordering-and-temporal-correctness-conditional) · cond
+7. [Numerical, Units, And Precision Hygiene](#7-numerical-units-and-precision-hygiene-conditional) · cond
+8. [Resource, Memory, And Performance Behavior](#8-resource-memory-and-performance-behavior-core) · core
+9. [Errors, Recovery, And Failure Modes](#9-errors-recovery-and-failure-modes-core) · core
+10. [Dependencies, Build, Configuration, And Environment](#10-dependencies-build-configuration-and-environment-core) · core
+11. [Architecture, Boundaries, And Maintainability](#11-architecture-boundaries-and-maintainability-core) · core
+12. [Testability, Determinism, And Reproducibility](#12-testability-determinism-and-reproducibility-core) · core
+13. [Domain-Specific Rules And Regulated Behavior](#13-domain-specific-rules-and-regulated-behavior-conditional) · cond
+14. [Implicit Coupling And Hidden Dependencies](#14-implicit-coupling-and-hidden-dependencies-core) · core
+15. [Integration And End-To-End Data Flow](#15-integration-and-end-to-end-data-flow-core) · core
+16. [Data Integrity And Semantic Validity](#16-data-integrity-and-semantic-validity-core) · core
+17. [Concurrency, Parallelism, And Serialization](#17-concurrency-parallelism-and-serialization-conditional) · cond
+18. [Decision Quality, Heuristics, And Algorithmic Robustness](#18-decision-quality-heuristics-and-algorithmic-robustness-conditional) · cond
+19. [Known Bug Patterns](#19-known-bug-patterns-core) · core
+20. [Unit, Integration, And End-To-End Test Logic](#20-unit-integration-and-end-to-end-test-logic-core) · core
+21. [Cross-Feature And Configuration Interaction](#21-cross-feature-and-configuration-interaction-core) · core
+22. [Deep Implicit-Coupling Audit](#22-deep-implicit-coupling-audit-core-for-shared-state-and-contract-changes) · scoped
+23. [Advanced Boundary And Data Validation](#23-advanced-boundary-and-data-validation-conditional) · cond
+24. [Smoke Test](#24-smoke-test-core) · core
+25. [Configuration, Parameter, And Option Validation](#25-configuration-parameter-and-option-validation-core) · core
+26. [Call Site And Execution-Path Verification](#26-call-site-and-execution-path-verification-core) · core
+27. [Constant, Identifier, And Format Consistency](#27-constant-identifier-and-format-consistency-core) · core
+28. [Strict Contract And Schema Validation](#28-strict-contract-and-schema-validation-core) · core
+29. [Temporal Correctness Regression](#29-temporal-correctness-regression-conditional) · cond
+30. [Operational Cost, Capacity, And Budget Validation](#30-operational-cost-capacity-and-budget-validation-core) · core
+31. [Mutation Testing And Test-Quality Probes](#31-mutation-testing-and-test-quality-probes-conditional) · cond
+32. [Producer-To-Consumer Contract Audit](#32-producer-to-consumer-contract-audit-core) · core
+33. [Randomized And Probabilistic Behavior](#33-randomized-and-probabilistic-behavior-conditional) · cond
+34. [Third-Party Platform And Library Behavior](#34-third-party-platform-and-library-behavior-core) · core
+35. [Write-Read And Persistence Identity](#35-write-read-and-persistence-identity-conditional) · cond
+36. [Boundary Fuzzing](#36-boundary-fuzzing-conditional) · cond
+37. [Differential Parity](#37-differential-parity-core) · core
+38. [Scope-Narrow Fix Detection](#38-scope-narrow-fix-detection-core-for-bug-fixes) · scoped
+39. [Deep Mutation Survival Review](#39-deep-mutation-survival-review-conditional) · cond
+40. [Property And Invariant Coverage](#40-property-and-invariant-coverage-conditional) · cond
+41. [Snapshot And Golden Baseline Coverage](#41-snapshot-and-golden-baseline-coverage-conditional) · cond
+42. [Audit Registry And Finding Hygiene](#42-audit-registry-and-finding-hygiene-core) · core
+43. [Caller Parity And Centralized-Contract Drift](#43-caller-parity-and-centralized-contract-drift-core) · core
+44. [Call Relocation And Side-Effect Timing](#44-call-relocation-and-side-effect-timing-conditional) · cond
+45. [Resource-Lifecycle Placement And Cadence](#45-resource-lifecycle-placement-and-cadence-conditional) · cond
+46. [Instrumentation And Non-Critical Side-Effect Resilience](#46-instrumentation-and-non-critical-side-effect-resilience-core) · core
+
+**Platform and delivery phases**
+
+47. [Threat Modeling And Application/API Security](#47-threat-modeling-and-applicationapi-security-conditional) · cond
+48. [Identity, Authorization, Session, And Abuse Controls](#48-identity-authorization-session-and-abuse-controls-conditional) · cond
+49. [Database, Storage, Migration, And Recovery](#49-database-storage-migration-and-recovery-conditional) · cond
+50. [Privacy, Consent, And Data Lifecycle](#50-privacy-consent-and-data-lifecycle-conditional) · cond
+51. [Accessibility And Inclusive Interaction](#51-accessibility-and-inclusive-interaction-core-for-user-interfaces) · scoped
+52. [UX, Responsive Layout, Mobile Platform, And User Trust](#52-ux-responsive-layout-mobile-platform-and-user-trust-core-for-user-interfaces) · scoped
+53. [Observability, Reliability, Incident Readiness, And SLOs](#53-observability-reliability-incident-readiness-and-slos-conditional) · cond
+54. [Delivery, Deployment, Infrastructure, And Supply-Chain Integrity](#54-delivery-deployment-infrastructure-and-supply-chain-integrity-core-for-releases) · scoped
+
+---
+
 # Core Audit Phases
 
 ## 1. Syntax, Build, And Immediate Runtime Failures [CORE]
@@ -653,6 +738,8 @@ Check combinations of features, flags, permissions, devices, and states.
 
 ## 22. Deep Implicit-Coupling Audit [CORE FOR SHARED-STATE AND CONTRACT CHANGES]
 
+> Deepens [phase 14](#14-implicit-coupling-and-hidden-dependencies-core). Run 14 at T2; add this at T3.
+
 Perform a deeper producer/consumer investigation when a change touches shared
 state, contracts, defaults, or conventions.
 
@@ -669,6 +756,8 @@ state, contracts, defaults, or conventions.
 - complete dependency map and prioritized decoupling/contract recommendations
 
 ## 23. Advanced Boundary And Data Validation [CONDITIONAL]
+
+> Deepens [phase 4](#4-input-boundaries-and-edge-cases-core). Run 4 at T2; add this at T3.
 
 Stress transformations and calculations near their practical and semantic limits.
 
@@ -786,6 +875,8 @@ component boundaries.
 - contract definition, producer/consumer mismatch, and compatibility result
 
 ## 29. Temporal Correctness Regression [CONDITIONAL]
+
+> Adds regression coverage for [phase 6](#6-time-ordering-and-temporal-correctness-conditional). Run 6 first.
 
 Add targeted regressions for time-sensitive behavior rather than relying on one
 happy-path clock test.
@@ -926,6 +1017,8 @@ with its required meaning intact.
 
 ## 36. Boundary Fuzzing [CONDITIONAL]
 
+> Automates what [phase 4](#4-input-boundaries-and-edge-cases-core) does by hand. Neither replaces the other.
+
 Use generated adversarial input to test parsers, validators, state machines,
 transformations, and public entry points.
 
@@ -983,6 +1076,8 @@ declaring the fix complete.
 - sibling search evidence, additional fixes, or explicit scope rationale
 
 ## 39. Deep Mutation Survival Review [CONDITIONAL]
+
+> Triages the output of [phase 31](#31-mutation-testing-and-test-quality-probes-conditional). Run 31 first or this has no input.
 
 Use mutation results and targeted manual changes to improve tests on the most
 critical code paths.
@@ -1059,6 +1154,8 @@ Maintain visibility of what was reviewed, what changed, and what remains open.
 
 ## 43. Caller Parity And Centralized-Contract Drift [CORE]
 
+> Extends [phase 26](#26-call-site-and-execution-path-verification-core) across every caller of a shared contract.
+
 Detect inline copies of centralized rules that may not change with their source
 of truth.
 
@@ -1080,6 +1177,8 @@ of truth.
 - drift candidates, confirmed divergence, and centralization/compatibility plan
 
 ## 44. Call Relocation And Side-Effect Timing [CONDITIONAL]
+
+> Extends [phase 26](#26-call-site-and-execution-path-verification-core) to when a call runs, not just whether it does.
 
 Check changes that move a correct call to a different point in control flow.
 
@@ -1143,7 +1242,7 @@ state or take down a primary operation when they fail.
 
 ---
 
-# Application Platform Expansion Phases
+# Platform And Delivery Phases
 
 The core taxonomy above applies broadly. The following phases close audit gaps
 that are especially important in modern web and mobile applications. They are
@@ -1369,10 +1468,10 @@ configuration, permissions, migrations, rollback, and dependency provenance.
 
 - release checklist, artifact/environment traceability, rollback plan, and remaining deployment risks
 
-## Research Basis For The Expansion
+## Research Basis
 
-The additional phases are informed by stable, primary guidance rather than a
-single product-specific checklist:
+Phases 47-54 are grounded in stable, primary guidance rather than a single
+product-specific checklist:
 
 - [OWASP Application Security Verification Standard 5.0](https://owasp.org/www-project-application-security-verification-standard/) for application security verification requirements.
 - [OWASP API Security Top 10](https://owasp.org/API-Security/editions/2023/en/0x10-api-security-risks/) for object authorization, authentication, resource consumption, inventory, and unsafe API consumption risks.

@@ -10,6 +10,10 @@ The taxonomy lives in `AUDIT_PROTOCOL.md` at the root of this plugin. Read it
 before auditing — do not audit from memory of it, and do not restate its phases
 back to the user.
 
+The phase numbers are a catalogue, not a running order. Select through the
+triage table, run phase 24 (smoke test) first regardless, and prefer the
+shallow member of a paired phase at T2 over running both.
+
 ## Running an audit
 
 **1. Establish scope before looking at anything.**
@@ -21,10 +25,10 @@ classifications involved, and the trust boundaries crossed.
 
 **2. Check for a domain overlay first.**
 
-If the project has one — `OVERLAY*.md`, or invariants named in its own docs —
-run it before any generic phase. A change touching an overlay invariant is T3
-regardless of diff size, and an overlay violation is a Blocker even when the
-code is correct and the tests pass.
+If the project has one — in `overlays/`, a file named `OVERLAY*.md`, or
+invariants named in its own docs — run it before any generic phase. A change
+touching an overlay invariant is T3 regardless of diff size, and an overlay
+violation is a Blocker even when the code is correct and the tests pass.
 
 If the project has no overlay and the change touches a domain where one is
 warranted, say so and offer to write one from `OVERLAY_TEMPLATE.md`. Do not
