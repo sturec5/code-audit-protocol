@@ -4,6 +4,7 @@ A checklist your coding agent runs before you ship — plus a way to write down
 the two or three things that would be a genuine disaster **in your project
 specifically**.
 
+![verify](https://github.com/sturec5/claude-audit-protocol/actions/workflows/verify.yml/badge.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 ![phases](https://img.shields.io/badge/phases-54-slateblue)
 ![overlays](https://img.shields.io/badge/worked%20overlays-3-teal)
