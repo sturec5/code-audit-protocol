@@ -1,0 +1,46 @@
+name: Report a problem
+description: Wrong guidance, a gap in the taxonomy, or something broken.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Four fields. Only two are required.
+
+        Proposing a whole new phase? Read the bar in
+        [CONTRIBUTING.md](https://github.com/sturec5/claude-audit-protocol/blob/main/CONTRIBUTING.md#contributing-a-phase)
+        first — most proposals belong in an overlay instead.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem
+      options:
+        - A phase gives wrong or unclear guidance
+        - A failure class has no home in the protocol
+        - Something is broken (link, example, script, manifest)
+        - Something else
+    validations:
+      required: true
+
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Phase number, file, or section heading — whatever you have.
+      placeholder: "Phase 17, or HOWTO.md step 4"
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong
+      description: >
+        For a missing failure class, say which phase you expected to catch it
+        and why it does not. That is the question the answer turns on.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Optional. What you were auditing, which agent, what you expected.
