@@ -42,7 +42,7 @@ That "skipped" line matters as much as the rest. It is the difference between
 *we checked and it was fine* and *nobody looked*. If your agent does not tell
 you what it skipped, ask again.
 
-**"Tier" is just how hard to look.** Five settings:
+**"Tier" is just how hard to look.** Five levels:
 
 | | |
 | --- | --- |
@@ -52,8 +52,8 @@ you what it skipped, ask again.
 | **T3** | anything near money, login, private data, or a migration |
 | **T4** | a whole release |
 
-The agent picks one. You can overrule it — and an overlay overrules both,
-which is the point of Step 4.
+The agent picks one and you can overrule it. An overlay overrules you both,
+automatically, which is the point of Step 4.
 
 **Second, the findings.** Each one looks like this:
 
@@ -107,8 +107,8 @@ Blocker; a thousand-line refactor can be Low.
 | **ACCEPTED** | understood, deliberately not being fixed |
 
 The CONFIRMED/PLAUSIBLE split is the one that protects you. An agent that
-labels everything CONFIRMED without running anything is guessing with
-confidence, which is worse than guessing.
+labels everything CONFIRMED without running anything is still guessing — it has
+just stopped telling you which parts are guesses.
 
 **Third, the verdict** — whether this is safe to ship, and what is still
 unknown.
@@ -141,8 +141,10 @@ Ask yourself one question:
 
 Not "what could break". Things break all the time. What would be a *disaster*.
 
-For a store, the answers are usually about money and about access. Write down
-two or three — not eight. You can add more later, when something bites you.
+For a store, the answers are usually about money and about access. Write two or
+three today. A mature overlay settles around six to eight, but every one of
+those should have arrived because something went wrong, not because you sat
+down and brainstormed.
 
 Create `overlays/discounts.md`:
 
@@ -177,6 +179,9 @@ three separate steps. Anything that trusts the count it read a moment ago.
 
 ### D2 — a discount never produces a negative total
 
+If this stops being true we pay the customer to shop with us, and refunds and
+accounting inherit a number that should not exist.
+
 **Prove it:** apply the largest code to the cheapest item and show the total is
 never below zero.
 
@@ -184,6 +189,9 @@ never below zero.
 amount stacking without a combined limit.
 
 ### D3 — an expired code cannot be redeemed
+
+If this stops being true, every campaign we ever ran is still live, and the
+oldest and most generous codes are the ones people still have.
 
 **Prove it:** set a code's expiry to one second ago and show the redemption is
 refused at the server, not only hidden in the interface.
@@ -193,7 +201,7 @@ against a client-supplied timestamp.
 
 ## Explicitly not covered
 
-- payment capture itself — that is a separate concern, phases 16-17 and 28
+- payment capture itself — big enough to deserve its own overlay
 - fraud and abuse patterns — accepted risk for now, revisit at scale
 
 ## Triage additions
@@ -233,7 +241,7 @@ Side by side — same code, same diff, both times:
 
 | | Step 1 · no overlay | Step 5 · with overlay |
 | --- | --- | --- |
-| **Checked first** | phase 1, then down the list | your three invariants |
+| **Checked first** | whichever generic phases triage picked | your three invariants |
 | **Tier** | T2 — picked from the diff | T3 — forced, diff ignored |
 | **The bug** | High · one of 54 generic classes | **Blocker** · breaks a rule you wrote |
 | **If you disagree** | arguable — severity is a judgment call | not arguable — you pre-committed |
@@ -257,7 +265,8 @@ checked long after everyone has forgotten why it was added.
 
 ## Four mistakes worth avoiding
 
-**Writing eight invariants on day one.** Start with two or three real ones. An
+**Filling all eight slots on day one.** Six to eight is where a mature overlay
+lands, not where a new one starts. Begin with two or three you can defend; an
 overlay that grows without incidents behind it becomes a list people skip.
 
 **Writing invariants you cannot prove.** "Discounts are validated properly" has

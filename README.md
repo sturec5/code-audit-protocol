@@ -25,8 +25,8 @@ keeping.
 
 **2. A short file where you write down your own disasters.** The generic list
 cannot know that in *your* app the thing that ends you is a payment charged
-twice. So you write that down yourself — six to eight lines. That file is
-called an **overlay**.
+twice. So you write that down yourself — a handful of rules, six to eight once
+it has matured. That file is called an **overlay**.
 
 Then one rule connects them: **the overlay wins.** Any change that touches it
 gets the full treatment, however small the change looks.
@@ -46,7 +46,7 @@ flowchart TD
 The left branch is the part no generic checklist has. Everything below the
 fork is the ordinary machinery.
 
-## Why `AUDIT_PROTOCOL.md` is 1,400 lines — and why you should not read it
+## Why `AUDIT_PROTOCOL.md` is over 1,500 lines — and why you should not read it
 
 **You are not the reader. Your agent is.**
 
