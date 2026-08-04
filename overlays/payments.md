@@ -89,7 +89,7 @@ the ledger with the provider's view.
 
 ### P6 — a failed capture never leaves a fulfilled order
 
-Fulfillment follows settled money, never optimistic money. If the capture fails
+Fulfillment follows a confirmed capture, never optimistic money. If the capture fails
 after fulfillment triggered, there must be a compensating path that is tested.
 
 **Prove it:** a test that fails the capture after the fulfillment call and
@@ -97,7 +97,7 @@ asserts the compensating action ran. If there is no compensating action, that
 is the finding.
 
 **Violation looks like:** fulfillment triggered from the request handler rather
-than from a settled-payment event; an ordering where the side effect precedes
+than from a capture-succeeded event; an ordering where the side effect precedes
 the confirmation.
 
 ### P7 — terminal states are terminal

@@ -10,7 +10,7 @@ The taxonomy lives in `AUDIT_PROTOCOL.md` at the root of this plugin. Read it
 before auditing — do not audit from memory of it, and do not restate its phases
 back to the user.
 
-The phase numbers are a catalogue, not a running order. Select through the
+The phase numbers are a catalog, not a running order. Select through the
 triage table, run phase 24 (smoke test) first regardless, and prefer the
 shallow member of a paired phase at T2 over running both.
 

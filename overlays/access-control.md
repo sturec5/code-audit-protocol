@@ -59,8 +59,8 @@ policy layer failed open.
 is refused. If the answer depends on which layer you ask, that is the finding.
 
 **Violation looks like:** a policy engine that returns "allow" when no rule
-matches; a middleware allowlist of protected routes rather than a denylist of
-public ones; row-level security enabled on some tables and forgotten on the
+matches; middleware that enumerates the routes needing authentication rather than
+protecting everything and enumerating the routes that are deliberately public; row-level security enabled on some tables and forgotten on the
 newest one.
 
 ### A4 — revocation takes effect on the next request
@@ -130,7 +130,7 @@ script with credentials that bypass row-level policy.
 | Role, permission, or membership change | This overlay (T3) + 5, 14, 21, 48, 50 |
 | Query touching per-principal data | This overlay (T3) + 16, 28, 32, 49 |
 | Caching, session, or token change | This overlay (T3) + 5, 6, 29, 48 |
-| Admin or support tooling | This overlay (T3) + 14, 22, 42, 50 |
+| Admin or support tooling | This overlay (T3) + 14, 22, 46, 50 |
 
 ## Maintenance
 

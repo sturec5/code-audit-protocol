@@ -33,7 +33,7 @@ INSENSITIVE='' SENSITIVE='' NUMBERS='' LOCALE_CHARS=''
 . ./denylist.local
 
 # Trim each line, drop empties, join with |. Interior spaces survive — terms
-# like "funding rate" are multi-word and deleting spaces would silently
+# like "legacy service name" are multi-word and deleting spaces would silently
 # disable them.
 flatten() {
   printf '%s\n' "$1" \
@@ -46,20 +46,29 @@ flatten() {
 PAT_I=$(flatten "$INSENSITIVE")
 PAT_S=$(flatten "$SENSITIVE")
 PAT_N=$(flatten "$NUMBERS")
+PAT_L=$(flatten "$LOCALE_CHARS")
 
 if [ "${1:-}" = "--list" ]; then
   printf 'case-insensitive:\n  %s\n\ncase-sensitive:\n  %s\n\nnumbers:\n  %s\n\nlocale:\n  %s\n' \
-    "$PAT_I" "$PAT_S" "$PAT_N" "$LOCALE_CHARS"
+    "$PAT_I" "$PAT_S" "$PAT_N" "$PAT_L"
   exit 0
 fi
 
 # denylist.example is excluded for the same reason check.sh itself is: it
 # documents the format with placeholders, and scanning it would make the
 # documented first-run flow fail on its own examples.
-FILES=$(git ls-files 2>/dev/null | grep -vE '^(check\.sh|LICENSE|denylist\.example)$')
+# Untracked-but-not-ignored files are included: work you have written but not
+# staged yet is exactly when a leak is most likely, and denylist.local stays
+# out because it is gitignored.
+FILES=$(git ls-files --cached --others --exclude-standard 2>/dev/null \
+        | grep -vE '^(check\.sh|LICENSE|denylist\.example)$')
 if [ -z "$FILES" ]; then
   printf 'check.sh: not a git checkout — falling back to *.md and *.json only\n'
   FILES=$(find . -type f \( -name '*.md' -o -name '*.json' \) -not -path './.git/*' | sed 's|^\./||')
+fi
+if [ -z "$FILES" ]; then
+  printf 'check.sh: nothing to scan. Refusing to report a pass over zero files.\n'
+  exit 2
 fi
 
 fail=0
@@ -68,8 +77,16 @@ fail=0
 IFS=$'\n' read -r -d '' -a FILE_LIST < <(printf '%s\0' "$FILES" | tr -d '\0'; printf '\0')
 
 scan() { # label, pattern, grep-flags
-  local label="$1" pattern="$2" flags="$3" hits
-  hits=$(grep -n $flags -E -- "$pattern" "${FILE_LIST[@]}" 2>/dev/null)
+  local label="$1" pattern="$2" flags="$3" hits rc
+  # grep: 0 = matched, 1 = no match, >=2 = bad pattern or unreadable file.
+  # Treating >=2 as "no match" would turn a broken pattern into a silent pass,
+  # which is the one failure this gate must never produce.
+  hits=$(grep -n $flags -E -- "$pattern" "${FILE_LIST[@]}"); rc=$?
+  if [ "$rc" -ge 2 ]; then
+    printf '\n  %s — SCAN DID NOT RUN (grep rejected the pattern)\n' "$label"
+    fail=2
+    return
+  fi
   if [ -n "$hits" ]; then
     printf '\n  %s\n' "$label"
     printf '%s\n' "$hits" | sed 's/^/    /'
@@ -82,7 +99,13 @@ printf 'check.sh — scanning %s files\n' "$(printf '%s\n' "$FILES" | grep -c .)
 [ -n "$PAT_I" ]        && scan 'project / agent / domain names' "$PAT_I" '-Ii'
 [ -n "$PAT_S" ]        && scan 'case-sensitive terms'           "$PAT_S" '-I'
 [ -n "$PAT_N" ]        && scan 'measured figures'               "$PAT_N" '-Ii'
-[ -n "$LOCALE_CHARS" ] && scan 'non-English letters'            "$LOCALE_CHARS" '-I'
+[ -n "$PAT_L" ]        && scan 'non-English letters'            "$PAT_L" '-I'
+
+if [ "$fail" -eq 2 ]; then
+  printf '\nERROR — a pattern in denylist.local is not valid regex, so that scan\n'
+  printf 'never ran. Nothing here was verified. Fix the pattern and run again.\n'
+  exit 2
+fi
 
 if [ "$fail" -eq 0 ]; then
   printf '\nPASS — no denylisted term found.\n'

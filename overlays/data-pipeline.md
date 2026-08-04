@@ -144,7 +144,7 @@ the data.
 | Split, sampling, or ordering change | This overlay (T3) + 6, 12, 29, 33, 40 |
 | Fitted object or training path | This overlay (T3) + 3, 12, 18, 33, 41 |
 | Schema, source, or ingestion change | This overlay (T3) + 10, 16, 28, 32, 34 |
-| Evaluation or reporting change | This overlay (T3) + 12, 18, 20, 41-42 |
+| Evaluation or reporting change | This overlay (T3) + 12, 18, 20, 41 |
 
 ## Maintenance
 

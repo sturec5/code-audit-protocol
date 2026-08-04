@@ -124,7 +124,6 @@ matching row is not waived — it still runs at Release.
 | Change type | Always consider |
 | --- | --- |
 | Anything an overlay covers | That overlay first, at T3, then the rows below |
-| New UI flow | 1-5, 8, 11-12, 15, 20-21, 24, 26, 31, 36-37, 51-52 |
 | API or worker behavior | 1-5, 9-10, 15-17, 20, 24-28, 32, 34-35, 37 |
 | Shared model, engine, or contract | 3-7, 12, 15-16, 20, 22, 25-28, 32, 35, 37, 40, 43 |
 | Auth, permissions, or privacy | 1-5, 9-10, 14-17, 20-21, 24-28, 32, 35, 37-38, 43, 47-48, 50 |
@@ -132,7 +131,7 @@ matching row is not waived — it still runs at Release.
 | Performance or memory fix | 5, 8-9, 12, 17, 20, 24, 30-31, 39, 44-46 |
 | Serialization or app-level persistence logic | 3-5, 9, 14-17, 20, 24-28, 32, 35, 37, 43 |
 | Database, storage, or migration | 3-5, 8-10, 14-17, 20, 24-28, 32, 35, 37, 43, 49-50, 53-54 |
-| UI, mobile, or accessibility change | 1-5, 8, 11-12, 15, 20-21, 24, 26, 31, 36-37, 51-52 |
+| New UI flow, mobile, or accessibility change | 1-5, 8, 11-12, 15, 20-21, 24, 26, 31, 36-37, 51-52 |
 | Refactor | 1-3, 5, 11-12, 15, 20, 24, 26-28, 31, 37, 41, 43-44 |
 | Bug fix | Original defect phases plus 20, 37-38, and affected regression tests |
 | Release | All applicable core phases plus 47-54, observability, rollback, and platform checks |
@@ -175,7 +174,7 @@ invariants, not theirs.
 
 ## How to read this file
 
-The numbers are a **catalogue, not a running order.** Nobody runs 54 phases.
+The numbers are a **catalog, not a running order.** Nobody runs 54 phases.
 Your change selects a handful through the triage table in §4, and the tier in
 §2 sets how deep each one goes.
 
@@ -193,8 +192,8 @@ Three things about the order:
 ## Phase index
 
 `core` runs on any code change · `cond` runs only when the application has
-that behavior · `scoped` is core for one kind of change (bug fix, user
-interface, release).
+that behavior · `scoped` is core for one kind of change, named in the phase's
+own tag.
 
 **Engineering phases**
 
@@ -1489,6 +1488,8 @@ product-specific checklist:
 An audit is complete only when it records:
 
 - scope and tier
+- overlay invariants checked and the evidence for each, or an explicit
+  statement that no overlay applies
 - phases run, phases skipped, and rationale for every skip
 - commands/tests/measurements run and their results
 - confirmed findings, fixed findings, accepted risks, and deferred work

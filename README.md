@@ -57,8 +57,8 @@ something actually broke for somebody. Writing them all down is the point.
 Reading them all is not.
 
 What you read is this page. Then you hand the file to your agent, and it uses
-the triage table inside to pick the four or five phases your change actually
-needs — an accessibility fix does not get the database phases.
+the triage table inside to pick the phases your change actually needs — an
+accessibility fix does not get the database phases.
 
 **If you never open `AUDIT_PROTOCOL.md`, this still works.**
 
@@ -199,8 +199,8 @@ the checklist they run against, and the place your own invariants live.
 questions, not a certificate. Phases you skip get recorded as skipped, with the
 reason — so "we did not check that" never quietly becomes "that is fine".
 
-**A green test suite does not prove the tests mean anything.** Two phases exist
-to audit the tests themselves, because an assertion that would also pass
+**A green test suite does not prove the tests mean anything.** Separate phases
+exist to audit the tests themselves, because an assertion that would also pass
 against broken code is worse than no assertion.
 
 **A hunch is not a defect.** Every finding carries evidence, a reproduction,
