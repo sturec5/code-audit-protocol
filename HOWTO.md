@@ -42,6 +42,19 @@ That "skipped" line matters as much as the rest. It is the difference between
 *we checked and it was fine* and *nobody looked*. If your agent does not tell
 you what it skipped, ask again.
 
+**"Tier" is just how hard to look.** Five settings:
+
+| | |
+| --- | --- |
+| **T0** | documentation only — check the links and move on |
+| **T1** | small, low-risk change |
+| **T2** | a real feature or new behavior |
+| **T3** | anything near money, login, private data, or a migration |
+| **T4** | a whole release |
+
+The agent picks one. You can overrule it — and an overlay overrules both,
+which is the point of Step 4.
+
 **Second, the findings.** Each one looks like this:
 
 ```
@@ -71,6 +84,32 @@ Residual risk — codes that were already over-redeemed are not corrected by
 this fix and need a separate cleanup.
 ```
 
+**The two labels on that first line.** `High` is how bad it is. `CONFIRMED` is
+how sure anyone is.
+
+| Severity | Means |
+| --- | --- |
+| **Blocker** | do not ship |
+| **Critical** | ship only with a fix, or a decision someone signs for |
+| **High** | genuinely wrong for real users, under conditions that happen |
+| **Medium** | wrong in an edge case, or drifts wrong over time |
+| **Low** | hygiene — batch it with other work |
+| **Observation** | not a defect; worth knowing |
+
+Severity follows impact, never diff size. A one-line permission check can be a
+Blocker; a thousand-line refactor can be Low.
+
+| Status | Means |
+| --- | --- |
+| **CONFIRMED** | reproduced — somebody ran it and watched it fail |
+| **PLAUSIBLE** | reasoned but not reproduced — a lead, not a fact |
+| **CLOSED** | fixed, and the fix was verified |
+| **ACCEPTED** | understood, deliberately not being fixed |
+
+The CONFIRMED/PLAUSIBLE split is the one that protects you. An agent that
+labels everything CONFIRMED without running anything is guessing with
+confidence, which is worse than guessing.
+
 **Third, the verdict** — whether this is safe to ship, and what is still
 unknown.
 
@@ -83,7 +122,16 @@ It did **not** know that in your store a double-redeemed discount is a direct
 loss of money, while a double-viewed product page is nothing. It treated both
 as ordinary code.
 
-That is what an overlay fixes.
+Think of a medical checkup. What you just ran is the standard one — blood
+pressure, heart, lungs — the same for every patient. Useful, and it caught
+something real.
+
+What it cannot do is know you are **allergic to penicillin**. That is true for
+you and almost nobody else, no standard checkup would ever find it, and it
+overrides everything: whatever else is going on, that drug does not get
+administered.
+
+Your project has allergies. Writing them down is Step 4.
 
 ## Step 4 — Write your first overlay
 
@@ -181,11 +229,21 @@ Tier: T3 (forced by overlay, not by diff size)
 Overlay invariants checked first: D1 FAIL, D2 pass, D3 pass
 ```
 
-The same bug is now a **Blocker** instead of a High, and the change is treated
-as critical path even though it is the same handful of lines.
+Side by side — same code, same diff, both times:
+
+| | Step 1 · no overlay | Step 5 · with overlay |
+| --- | --- | --- |
+| **Checked first** | phase 1, then down the list | your three invariants |
+| **Tier** | T2 — picked from the diff | T3 — forced, diff ignored |
+| **The bug** | High · one of 54 generic classes | **Blocker** · breaks a rule you wrote |
+| **If you disagree** | arguable — severity is a judgment call | not arguable — you pre-committed |
+| **Next release** | someone re-derives that this matters | D1 is checked automatically, forever |
 
 Nothing about the code changed. What changed is that you told the system what
-matters to you.
+matters to you — once, in writing, before you needed it.
+
+That last row is the real payoff. An invariant written today keeps being
+checked long after everyone has forgotten why it was added.
 
 ## What to run when
 

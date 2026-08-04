@@ -4,6 +4,11 @@ A checklist your coding agent runs before you ship — plus a way to write down
 the two or three things that would be a genuine disaster **in your project
 specifically**.
 
+![license](https://img.shields.io/badge/license-MIT-blue)
+![phases](https://img.shields.io/badge/phases-54-slateblue)
+![overlays](https://img.shields.io/badge/worked%20overlays-3-teal)
+![commands](https://img.shields.io/badge/commands%20included-none-lightgrey)
+
 > Community project. Not affiliated with or endorsed by Anthropic.
 
 ## The 60-second version
@@ -25,6 +30,21 @@ called an **overlay**.
 
 Then one rule connects them: **the overlay wins.** Any change that touches it
 gets the full treatment, however small the change looks.
+
+```mermaid
+flowchart TD
+    A["a code change"] --> B{"does one of your<br/>own rules cover it?"}
+    B -- yes --> C["check your rules first<br/>treat it as critical path<br/>a violation blocks the release"]
+    B -- no --> D["pick how hard to look<br/>T0 quick · T4 whole release"]
+    C --> D
+    D --> E["the triage table picks<br/>a handful of the 54 phases"]
+    E --> F["smoke test runs first"]
+    F --> G["run them against evidence,<br/>not the happy path"]
+    G --> H["findings, plus what was<br/>skipped and why"]
+```
+
+The left branch is the part no generic checklist has. Everything below the
+fork is the ordinary machinery.
 
 ## Why `AUDIT_PROTOCOL.md` is 1,400 lines — and why you should not read it
 
@@ -68,8 +88,21 @@ Fifteen minutes.
 
 ## The one idea worth understanding: overlays
 
-Say you run a store. You change one line in the shipping-address form — a
-label, basically. Trivial.
+Think of a medical checkup.
+
+The 54 phases are the **standard checkup**. Blood pressure, heart, lungs. The
+same for every patient, which is why it is worth having a fixed list.
+
+An overlay is the line on your chart that says **allergic to penicillin**. It
+is true for you and almost nobody else, no general checkup would ever discover
+it, and it **overrides everything** — whatever else is going on, that drug
+does not get administered.
+
+Your project has allergies. The generic list cannot know them. You write them
+down once.
+
+Here is what that buys you. Say you run a store. You change one line in the
+shipping-address form — a label, basically. Trivial.
 
 Except that form writes to the order record, and the order record is what the
 payment retry reads. Your overlay says: *money must never move twice.* So this
@@ -90,8 +123,9 @@ point: it is the part that knows something the generic list never can.
 
 ## What an overlay actually looks like
 
-Each entry is a claim that can be proved yes or no. Not "review the payment
-code" — that is a wish. This is an invariant:
+An overlay is a list of **invariants**. An invariant is just a thing that must
+never stop being true — written so that someone can go and prove it, yes or
+no. "Review the payment code" is not one; there is no answer to it. This is:
 
 > **A retried request must not create a second charge.**
 >
@@ -106,14 +140,44 @@ Start from the failure, not the feature. "Checkout flow" is a feature. "Money
 moved twice" is a failure class, and it survives the refactor that renames
 checkout.
 
-Three worked examples ship here — [payments](overlays/payments.md) (7
-invariants), [access-control](overlays/access-control.md),
-[data-pipeline](overlays/data-pipeline.md). Read one for the shape, then throw
-them away and write yours, starting from
-[`OVERLAY_TEMPLATE.md`](OVERLAY_TEMPLATE.md).
-
 If the only proof you can offer is "I read it and it looked right", it is not
 an invariant yet.
+
+### The `overlays/` folder is examples, not a library
+
+Nothing in it is meant to be installed, imported, or copied as-is. They are
+three allergy charts written for three imaginary patients:
+
+- [payments](overlays/payments.md) — a system that moves money
+- [access-control](overlays/access-control.md) — a system with user accounts
+- [data-pipeline](overlays/data-pipeline.md) — a system that learns from data
+
+If you do not handle money, `payments.md` means nothing to you. That is fine —
+delete the folder and the repo still works.
+
+They ship because "write down the invariants specific to your system" is
+useless advice until you have seen one. Open whichever is closest to your
+project, take the shape, then write your own from
+[`OVERLAY_TEMPLATE.md`](OVERLAY_TEMPLATE.md).
+
+## Why not just ask your agent to review the code?
+
+You can, and you should — that catches a lot. Three things it does not give
+you.
+
+**It cannot know your allergies.** A review that does not know a double
+redemption costs you money treats it as an ordinary race condition, or misses
+it entirely. Nothing but you can supply that.
+
+**It is different every time.** Ask twice, get two different reviews, neither
+of which tells you what it did not look at. A fixed list makes the second
+audit comparable to the first.
+
+**"Looks fine" is not the same as "I checked twelve things and skipped eight,
+here is which and why."** The second one is auditable. The first is a mood.
+
+This is not a replacement for the review tools built into your agent. It is
+the checklist they run against, and the place your own invariants live.
 
 ## What is in here
 
