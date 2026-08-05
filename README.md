@@ -4,11 +4,23 @@ A checklist your coding agent runs before you ship — plus a way to write down
 the two or three things that would be a genuine disaster **in your project
 specifically**.
 
+![works with](https://img.shields.io/badge/works%20with-any%20coding%20agent-2ea44f)
 ![verify](https://github.com/sturec5/claude-audit-protocol/actions/workflows/verify.yml/badge.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 ![phases](https://img.shields.io/badge/phases-54-slateblue)
 ![overlays](https://img.shields.io/badge/worked%20overlays-3-teal)
 ![commands](https://img.shields.io/badge/commands%20included-none-lightgrey)
+
+> ### This is not a Claude Code tool
+>
+> It is **one markdown file**. Any coding agent that can read a file in your
+> repository can run it — Claude Code, Cursor, Codex, Windsurf, Copilot, Aider,
+> Zed, or whatever you use next year. There is nothing to install, no runtime,
+> no dependency, and no API to call.
+>
+> A Claude Code plugin ships here as a convenience for people who want it in
+> every project without copying a file. It is optional, and skipping it costs
+> you nothing.
 
 > Community project. Not affiliated with or endorsed by Anthropic.
 
@@ -64,11 +76,15 @@ accessibility fix does not get the database phases.
 
 ## Try it in one minute
 
+### Any agent — Cursor, Codex, Windsurf, Copilot, Claude Code, anything
+
+Put the file in your repository:
+
 ```bash
 curl -O https://raw.githubusercontent.com/sturec5/claude-audit-protocol/main/AUDIT_PROTOCOL.md
 ```
 
-Then, in your agent session:
+Then say this in your agent session:
 
 ```
 Audit the current change against AUDIT_PROTOCOL.md.
@@ -76,12 +92,21 @@ Pick the tier and the phases from the change-triage table, tell me which
 phases you skipped and why, and report findings in the finding standard.
 ```
 
-Or install it as a Claude Code plugin, available in every project:
+That is the whole integration. The agent reads a file and follows it.
+
+### Claude Code — optional convenience
+
+Installs it once and makes it available in every project, so you never copy the
+file again:
 
 ```
 /plugin marketplace add sturec5/claude-audit-protocol
 /plugin install audit-protocol@claude-audit-protocol
 ```
+
+It ships one skill and nothing else — no hooks, no commands, no agents, no MCP
+servers. It grants no permissions and changes no behaviour until you ask for an
+audit.
 
 **New here?** [`HOWTO.md`](HOWTO.md) walks through one real example end to end —
 run an audit, read the output, write your first overlay, see what changes.
