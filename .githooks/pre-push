@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# pre-push — run every gate before anything leaves this machine.
+#
+# Enable once per clone:
+#   git config core.hooksPath .githooks
+#
+# It lives here rather than in .git/hooks so that it is tracked, reviewable, and
+# survives a fresh clone. .git/hooks is not cloned and not versioned; a gate
+# nobody can read is a gate nobody trusts.
+#
+# check.sh is the reason this exists. Its term list is denylist.local, which is
+# gitignored and therefore never reaches GitHub — so the leak gate cannot run in
+# CI by construction, only the test proving it still fails when it should. The
+# gate that matters most is local, and this is where it belongs.
+#
+# Bypass with `git push --no-verify`. It is a seatbelt, not a lock, and it does
+# not gate anyone else's pull request. GitHub Actions still does that.
+
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+fail=0
+
+run() {
+  local label="$1"; shift
+  printf '\n── %s\n' "$label"
+  "$@" || fail=1
+}
+
+run 'check.sh — nothing project-specific ships'  ./check.sh
+run 'verify.py — links, manifests, version, phases' python3 .github/verify.py
+run 'check_test.sh — the gate still fails when it should' ./check_test.sh
+
+if [ "$fail" -ne 0 ]; then
+  printf '\npre-push BLOCKED. Nothing was pushed.\n'
+  printf 'Fix what is above. If you genuinely mean to push anyway: git push --no-verify\n'
+  exit 1
+fi
+
+printf '\npre-push: all three gates passed.\n'

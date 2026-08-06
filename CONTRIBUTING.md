@@ -7,7 +7,8 @@ its place.
 ## Before anything else
 
 ```bash
-cp denylist.example denylist.local   # first time only, then fill it in
+cp denylist.example denylist.local    # first time only, then fill it in
+git config core.hooksPath .githooks   # first time only, per clone
 ./check.sh
 ```
 
@@ -15,6 +16,16 @@ This repository has to stay generic to be worth anything. `check.sh` scans for
 project names, domain vocabulary, real file paths, measured figures, and —
 when configured — non-English text. Run it before every push; it has to
 exit 0.
+
+The second line installs [`.githooks/pre-push`](.githooks/pre-push), which runs
+that gate plus `verify.py` and `check_test.sh` and aborts the push if any of
+them fails. It is one command per checkout because git never clones hooks.
+`git push --no-verify` bypasses it.
+
+Keep it even though CI runs two of the three: `check.sh` cannot run on GitHub at
+all. Its term list is untracked by design, so the gate that decides whether
+private material ships is local by construction — and a gate you have to
+remember is a gate you will eventually forget.
 
 The terms it scans for live in `denylist.local`, which is gitignored — a
 denylist committed to a public repository publishes exactly what it was
