@@ -1,8 +1,8 @@
 # Overlay Template
 
-Copy this file, fill it in, and keep it next to your audit protocol. Delete
-every instruction line as you replace it — an overlay with template text still
-in it has not been written yet.
+Copy the template below, fill it in, and keep it next to your audit protocol.
+Delete every instruction line as you replace it — an overlay with template
+text still in it has not been written yet.
 
 An overlay exists to catch what a generic taxonomy structurally cannot: the
 failures that are specific to what your system does. If you cannot name a
@@ -38,7 +38,8 @@ invariant — move it.
 
 ## Template
 
-Everything below the line is what you copy.
+Copy everything from the `# <Overlay name>` heading below to the end of the
+file. Nothing above it is part of your overlay.
 
 ---
 

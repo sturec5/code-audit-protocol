@@ -8,7 +8,7 @@ specifically**.
 ![verify](https://github.com/sturec5/claude-audit-protocol/actions/workflows/verify.yml/badge.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 ![phases](https://img.shields.io/badge/phases-54-slateblue)
-![overlays](https://img.shields.io/badge/worked%20overlays-3-teal)
+![overlays](https://img.shields.io/badge/worked%20overlays-4-teal)
 ![commands](https://img.shields.io/badge/commands%20included-none-lightgrey)
 
 > ### This is not a Claude Code tool
@@ -51,9 +51,8 @@ flowchart TD
     B -- no --> D["pick how hard to look<br/>T0 quick · T4 whole release"]
     C --> D
     D --> E["the triage table picks<br/>a handful of the 54 phases"]
-    E --> F["smoke test runs first"]
-    F --> G["run them against evidence,<br/>not the happy path"]
-    G --> H["findings, plus what was<br/>skipped and why"]
+    E --> F["run them against evidence,<br/>not the happy path"]
+    F --> G["findings, plus what was<br/>skipped and why"]
 ```
 
 The left branch is the part no generic checklist has. Everything below the
@@ -75,6 +74,11 @@ accessibility fix does not get the database phases.
 **If you never open `AUDIT_PROTOCOL.md`, this still works.**
 
 ## Try it in one minute
+
+Two ways in, and you need only one: put the file in your repository, or — in
+Claude Code — install the plugin. Doing both leaves two copies that can drift;
+if you have both, the one in your repository wins. It is pinned to your project
+and you can edit it.
 
 ### Any agent — Cursor, Codex, Windsurf, Copilot, Claude Code, anything
 
@@ -102,6 +106,16 @@ file again:
 ```
 /plugin marketplace add sturec5/claude-audit-protocol
 /plugin install audit-protocol@claude-audit-protocol
+```
+
+**Restart Claude Code before you use it.** The skill is not registered in the
+session that installed it, and nothing tells you so — ask for an audit there
+and you get an ordinary review with no protocol behind it.
+
+After the restart there is nothing to copy. Ask in your own words:
+
+```
+Audit the current change.
 ```
 
 It ships one skill and nothing else — no hooks, no commands, no agents, no MCP
@@ -172,11 +186,12 @@ an invariant yet.
 ### The `overlays/` folder is examples, not a library
 
 Nothing in it is meant to be installed, imported, or copied as-is. They are
-three allergy charts written for three imaginary patients:
+four allergy charts written for four imaginary patients:
 
 - [payments](overlays/payments.md) — a system that moves money
 - [access-control](overlays/access-control.md) — a system with user accounts
 - [data-pipeline](overlays/data-pipeline.md) — a system that learns from data
+- [evidence-chain](overlays/evidence-chain.md) — a system whose product is the record
 
 If you do not handle money, `payments.md` means nothing to you. That is fine —
 delete the folder and the repo still works.
@@ -213,8 +228,8 @@ the checklist they run against, and the place your own invariants live.
 | [`HOWTO.md`](HOWTO.md) | You. One worked example, start to finish. Read this second. |
 | [`AUDIT_PROTOCOL.md`](AUDIT_PROTOCOL.md) | Your agent. 54 phases, tiers, finding standard, triage table. |
 | [`OVERLAY_TEMPLATE.md`](OVERLAY_TEMPLATE.md) | You, once — when you write your first overlay. |
-| [`overlays/`](overlays/) | Three worked examples, for reference. |
-| [`templates/`](templates/) | Report formats: one finding, and the standing "can this ship?" record. |
+| [`overlays/`](overlays/) | Four worked examples, for reference. |
+| [`templates/`](templates/) | Report formats to copy into your repo: one finding, and the standing "can this ship?" record. |
 | `check.sh`, `denylist.example` | Only if you fork this and publish your own version. |
 | `.claude-plugin/`, `skills/` | The Claude Code plugin wrapper. |
 
