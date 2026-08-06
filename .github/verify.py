@@ -2,9 +2,9 @@
 """Repository self-check: the mechanical part of this repo's own standard.
 
 Verifies what a reviewer should never have to re-derive by hand: every link
-and anchor resolves, every in-plugin path the skill names exists, the plugin
-manifests parse, the phase structure is intact, and the one mermaid block is
-well-formed.
+and anchor resolves, the skill can still reach its taxonomy, the plugin
+manifests parse and agree, the version moves whenever the plugin's payload
+does, the phase structure is intact, and the one mermaid block is well-formed.
 
 The term denylist (check.sh) is deliberately NOT run here — its term list is
 untracked by design, and scanning with placeholder terms would be theater.
@@ -15,6 +15,7 @@ import glob
 import json
 import os
 import re
+import subprocess
 import sys
 
 failures = []
@@ -121,6 +122,66 @@ try:
 except Exception as e:  # noqa: BLE001 - a parse failure is already reported above
     fail(f"manifest cross-check skipped: {e}")
 
+# --- the version moves when the plugin's payload moves ----------------------
+# Version 1.0.0 survived nine content commits. The plugin cache is keyed on
+# version and `claude plugin update` compares versions, so every one of those
+# commits was unreachable to anyone who had already installed — the update ran,
+# reported success, and changed nothing. This is the check that would have
+# caught it.
+#
+# PAYLOAD is what the skill directs an agent to read. README, CONTRIBUTING and
+# SECURITY are copied into the plugin too, but a typo fix in one of them does
+# not change how an audit runs, and forcing a release for it would make this
+# check noise — and a noisy gate gets disabled.
+#
+# Everything here is asked of HEAD, not the working tree: an uncommitted bump is
+# not yet a claim about anything, and answering for the working tree would make
+# the check fail on the very commit that fixes it.
+PAYLOAD = ["skills", "AUDIT_PROTOCOL.md", "OVERLAY_TEMPLATE.md", "overlays", "templates"]
+
+
+def git(*args):
+    r = subprocess.run(("git", *args), capture_output=True, text=True)
+    return r.returncode, r.stdout.strip()
+
+
+rc, head_manifest = git("show", "HEAD:.claude-plugin/plugin.json")
+rc_shallow, shallow = git("rev-parse", "--is-shallow-repository")
+if rc != 0 or rc_shallow != 0:
+    fail("version-payload check DID NOT RUN: no git history here, so nothing was verified")
+elif shallow != "false":
+    # Measured, not assumed: a depth-1 clone does NOT fail the lookup below. Its
+    # single commit looks like the one that introduced the current version, the
+    # diff from it to HEAD is therefore empty, and the check reports a pass
+    # having verified nothing. Shallowness has to be refused by name.
+    fail(
+        "version-payload check DID NOT RUN: shallow clone. A truncated history cannot say "
+        "when the version was last set, and passes vacuously if asked. CI needs "
+        "actions/checkout with fetch-depth: 0"
+    )
+else:
+    version = json.loads(head_manifest)["version"]
+    rc, hits = git("log", "--format=%H", "-S", f'"version": "{version}"',
+                   "--", ".claude-plugin/plugin.json")
+    if rc != 0 or not hits:
+        fail(
+            f"version-payload check DID NOT RUN: no commit in this history sets version "
+            f"{version!r} in .claude-plugin/plugin.json"
+        )
+    else:
+        bumped_at = hits.splitlines()[0]
+        rc, changed = git("diff", "--name-only", f"{bumped_at}..HEAD", "--", *PAYLOAD)
+        if rc != 0:
+            fail("version-payload check DID NOT RUN: git diff failed")
+        elif changed:
+            files = sorted(changed.splitlines())
+            shown = ", ".join(files[:4]) + (f", +{len(files) - 4} more" if len(files) > 4 else "")
+            fail(
+                f"version {version} was set at {bumped_at[:7]} and the plugin payload has "
+                f"changed since ({shown}). Bump the version, or an installed copy cannot "
+                f"receive this."
+            )
+
 # --- mermaid well-formed -------------------------------------------------
 for f in sorted(md_files):
     for block in re.findall(r"```mermaid\n(.*?)```", open(f).read(), re.S):
@@ -137,4 +198,4 @@ if failures:
         print(f"  {m}")
     sys.exit(1)
 
-print(f"verify: OK — {len(md_files)} markdown files, manifests, phases, mermaid")
+print(f"verify: OK — {len(md_files)} markdown files, manifests, version, phases, mermaid")

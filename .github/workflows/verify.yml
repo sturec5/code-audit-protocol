@@ -9,7 +9,13 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
+      # Full history: the version-payload check asks when the current version
+      # was last set, and the default shallow clone cannot answer that. The
+      # check reports DID NOT RUN rather than passing, so a missing fetch-depth
+      # fails the build instead of quietly disabling it.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - run: python3 .github/verify.py
       # The gate's own fail-open cases. Its term list is untracked by design,
       # so CI cannot run check.sh against this repository — but it can prove
