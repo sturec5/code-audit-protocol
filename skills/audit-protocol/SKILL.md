@@ -6,10 +6,9 @@ license: MIT
 
 # Audit Protocol
 
-The taxonomy is `AUDIT_PROTOCOL.md` at the plugin root — two directories above
-the base directory Claude Code states when it loads this skill. If your harness
-expands `${CLAUDE_PLUGIN_ROOT}`, then `${CLAUDE_PLUGIN_ROOT}/AUDIT_PROTOCOL.md`
-is the same file by a shorter name.
+The taxonomy is `${CLAUDE_PLUGIN_ROOT}/AUDIT_PROTOCOL.md` — an absolute path by
+the time you read this. If that path does not resolve, the same file is two
+directories above the base directory stated when this skill loads.
 
 Read it before auditing — do not audit from memory of it, and do not restate
 its phases back to the user. If you cannot read it, say so and stop: an audit
