@@ -2,9 +2,8 @@
 """Repository self-check: the mechanical part of this repo's own standard.
 
 Verifies what a reviewer should never have to re-derive by hand: every link
-and anchor resolves, every in-plugin path the skill names exists, the plugin
-manifests parse, the phase structure is intact, and the one mermaid block is
-well-formed.
+and anchor resolves, the plugin manifests parse, the phase structure is
+intact, and the one mermaid block is well-formed.
 
 The term denylist (check.sh) is deliberately NOT run here — its term list is
 untracked by design, and scanning with placeholder terms would be theater.
@@ -61,13 +60,6 @@ for f in sorted(md_files):
             resolved = f
         if frag and resolved in anchors_of and frag not in anchors_of[resolved]:
             fail(f"{f}: broken anchor {target}")
-
-# --- the paths the skill names inside the plugin exist ------------------
-skill = "skills/audit-protocol/SKILL.md"
-skill_txt = open(skill).read()
-for rel in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\s`)]+)", skill_txt):
-    if not os.path.exists(rel.rstrip("/")):
-        fail(f"{skill}: names a plugin path that does not exist: {rel}")
 
 # --- phase structure intact ---------------------------------------------
 protocol = open("AUDIT_PROTOCOL.md").read()

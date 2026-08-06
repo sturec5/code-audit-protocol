@@ -77,10 +77,6 @@ the change is of that kind and optional otherwise.
 | T3 Critical path | Auth, money, data loss, privacy, permissions, production migration, or security boundary | Full relevant phase battery, adversarial tests, rollback review, and manual verification. |
 | T4 Release audit | Material release or incident follow-up | Cross-cutting audit, production readiness review, and explicit residual-risk sign-off. |
 
-Tier is based on the roster of files a change touches, not on what most of its
-lines look like. A commit that is almost all documentation is not T0 if the
-same commit also changes code, tests, or tooling.
-
 ### Required Audit Context
 
 Before running phases, record:
@@ -136,7 +132,6 @@ matching row is not waived — it still runs at Release.
 | Serialization or app-level persistence logic | 3-5, 9, 14-17, 20, 24-28, 32, 35, 37, 43 |
 | Database, storage, or migration | 3-5, 8-10, 14-17, 20, 24-28, 32, 35, 37, 43, 49-50, 53-54 |
 | New UI flow, mobile, or accessibility change | 1-5, 8, 11-12, 15, 20-21, 24, 26, 31, 36-37, 51-52 |
-| File or directory relocation and reference rewriting | 1-2, 10, 14-15, 20, 24, 26-28, 32, 35, 37, 41, 43 |
 | Refactor | 1-3, 5, 11-12, 15, 20, 24, 26-28, 31, 37, 41, 43-44 |
 | Bug fix | Original defect phases plus 20, 37-38, and affected regression tests |
 | Release | All applicable core phases plus 47-54, observability, rollback, and platform checks |
@@ -163,11 +158,7 @@ Write each invariant as a claim that must be proved yes or no with evidence,
 never by reading the happy path. Keep overlays short: more than about eight
 invariants means you have written a specification, not an overlay.
 
-Not every overlay is filed as one. A contributor guide, an agent instructions
-file, or an architecture note is often where a project's invariants are
-already written down — take them from there and run them first.
-
-Build your own with [OVERLAY_TEMPLATE.md](OVERLAY_TEMPLATE.md). Four worked
+Build your own with [OVERLAY_TEMPLATE.md](OVERLAY_TEMPLATE.md). Three worked
 examples ship alongside this protocol:
 
 | Overlay | Failure class it pins |
@@ -175,7 +166,6 @@ examples ship alongside this protocol:
 | [payments](overlays/payments.md) | money moved twice, moved wrong, or not moved at all |
 | [access-control](overlays/access-control.md) | one principal reaching another's data or privileges |
 | [data-pipeline](overlays/data-pipeline.md) | leakage, non-determinism, and silent schema drift |
-| [evidence-chain](overlays/evidence-chain.md) | a sealed result that no longer proves what it claims |
 
 They are illustrations, not a library to install. Yours should name your
 invariants, not theirs.
