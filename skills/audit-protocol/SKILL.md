@@ -6,13 +6,15 @@ license: MIT
 
 # Audit Protocol
 
-The taxonomy is `AUDIT_PROTOCOL.md` at the plugin root — `${CLAUDE_PLUGIN_ROOT}/AUDIT_PROTOCOL.md`,
-which is also two directories above the base directory Claude Code states when
-it loads this skill. Either route resolves it; use whichever your harness gives
-you. Read it before auditing — do not audit from memory of it, and do not
-restate its phases back to the user. If you cannot read it, say so and stop: an
-audit run from memory of the taxonomy is not this protocol and must not be
-reported as one.
+The taxonomy is `AUDIT_PROTOCOL.md` at the plugin root — two directories above
+the base directory Claude Code states when it loads this skill. If your harness
+expands `${CLAUDE_PLUGIN_ROOT}`, then `${CLAUDE_PLUGIN_ROOT}/AUDIT_PROTOCOL.md`
+is the same file by a shorter name.
+
+Read it before auditing — do not audit from memory of it, and do not restate
+its phases back to the user. If you cannot read it, say so and stop: an audit
+run from memory of the taxonomy is not this protocol and must not be reported
+as one.
 
 If the project under audit keeps its own `AUDIT_PROTOCOL.md`, read that one
 instead and say which copy you used. A repository copy is pinned to that project
@@ -44,19 +46,16 @@ A change touching an overlay invariant is T3 regardless of diff size, and an
 overlay violation is a Blocker even when the code is correct and the tests pass.
 
 If the project has no overlay and the change touches a domain where one is
-warranted, say so and offer to write one from
-`${CLAUDE_PLUGIN_ROOT}/OVERLAY_TEMPLATE.md`. Do not invent invariants
-unilaterally. The examples in `${CLAUDE_PLUGIN_ROOT}/overlays/` show the shape;
-they are nobody's actual invariants.
+warranted, say so and offer to write one from `OVERLAY_TEMPLATE.md` at the
+plugin root. Do not invent invariants unilaterally. The examples in `overlays/`
+beside it show the shape; they are nobody's actual invariants.
 
 **3. Pick the tier, then the phases.**
 
 Tiers T0 (documentation) through T4 (release audit) are defined in the
-protocol. Classify by the roster of files the change touches, not by what its
-lines look like: a mostly-documentation commit that also changes code, tests,
-or tooling is not T0. Use the protocol's change-triage table to select phases.
-Bias toward the higher tier when the change touches authentication, money,
-data loss, privacy, permissions, migrations, or a security boundary.
+protocol. Use its change-triage table to select phases. Bias toward the higher
+tier when the change touches authentication, money, data loss, privacy,
+permissions, migrations, or a security boundary.
 
 **4. Run the phases against evidence, not against the happy path.**
 
@@ -78,8 +77,8 @@ reproduced is PLAUSIBLE, and say which. Never present a hunch as a defect.
 State which phases ran, which were skipped, and why each was skipped — "not
 applicable" and "out of time" are both legitimate reasons and both belong in
 the record. State what the audit could not establish. If the project keeps an
-`AUDIT_STATUS.md`, update it. If it does not, offer one from
-`${CLAUDE_PLUGIN_ROOT}/templates/` rather than writing it uninvited.
+`AUDIT_STATUS.md`, update it. If it does not, offer one from `templates/` at the
+plugin root rather than writing it uninvited.
 
 ## When fixing what the audit found
 

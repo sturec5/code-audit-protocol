@@ -62,9 +62,32 @@ for f in sorted(md_files):
         if frag and resolved in anchors_of and frag not in anchors_of[resolved]:
             fail(f"{f}: broken anchor {target}")
 
-# --- the paths the skill names inside the plugin exist ------------------
+# --- the skill can still reach its taxonomy -----------------------------
+# The skill names two routes to AUDIT_PROTOCOL.md. Three things about them are
+# properties of this repository and are checked below. Two are supplied by the
+# harness at run time and CANNOT be checked here: whether Claude Code states a
+# base directory at all, and whether ${CLAUDE_PLUGIN_ROOT} is expanded. A pass
+# means the repository holds up its end of both routes, not that either one
+# resolved for any particular agent.
 skill = "skills/audit-protocol/SKILL.md"
 skill_txt = open(skill).read()
+
+# 1. It names the taxonomy at all. A rewrite that drops the reference entirely
+#    leaves an agent auditing from memory, which is what the skill forbids.
+if "AUDIT_PROTOCOL.md" not in skill_txt:
+    fail(f"{skill}: never names AUDIT_PROTOCOL.md — nothing routes to the taxonomy")
+
+# 2. The two-directory hop the skill promises still lands on the file. This is
+#    the static half of the base-directory route: what the base directory IS
+#    comes from the harness, but that it sits two levels under the plugin root
+#    is this repository's layout, and moving either file breaks the promise
+#    silently.
+hop = os.path.normpath(os.path.join(os.path.dirname(skill), "..", "..", "AUDIT_PROTOCOL.md"))
+if not os.path.exists(hop):
+    fail(f"{skill}: the two-directory hop it promises does not reach AUDIT_PROTOCOL.md")
+
+# 3. Every ${CLAUDE_PLUGIN_ROOT}/… path it names exists, for harnesses that do
+#    expand the variable.
 for rel in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\s`)]+)", skill_txt):
     if not os.path.exists(rel.rstrip("/")):
         fail(f"{skill}: names a plugin path that does not exist: {rel}")

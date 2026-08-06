@@ -109,8 +109,12 @@ file again:
 ```
 
 **Restart Claude Code before you use it.** The skill is not registered in the
-session that installed it, and nothing tells you so — ask for an audit there
-and you get an ordinary review with no protocol behind it.
+session that installed it, and the install says nothing about that — ask for an
+audit there and you get an ordinary review with no protocol behind it.
+
+The same applies to updates, which do say so. A session reads the skill once, at
+startup, and keeps serving that copy: a plugin updated mid-session goes on
+behaving like the version it began with until you restart.
 
 After the restart there is nothing to copy. Ask in your own words:
 
