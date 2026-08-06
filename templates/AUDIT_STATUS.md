@@ -29,7 +29,13 @@ must be checkable by someone who was not in the audit.>
 - **Audited:** <what was actually examined — the change, feature, module, or
   journey. Be narrow. A broad claim here is the most common way an audit
   status document becomes a lie.>
+- **Evidence sources:** <which of these the audit had, and which it did not: the
+  repository, a running test seat, read access to the deployed environment,
+  production telemetry>
 - **Phases run:** <numbers>
+- **Phases PARTIAL:** <numbers, each naming the evidence source it lacked and
+  what was covered without it. A phase that could not be finished is not a phase
+  that passed.>
 - **Phases skipped:** <numbers, each with the reason. "Not applicable" is a
   reason; "no time" is also a reason and belongs here too.>
 - **Overlays run:** <which, or none>

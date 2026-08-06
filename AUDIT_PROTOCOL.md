@@ -94,6 +94,21 @@ Before running phases, record:
 - privileged operations and destructive operations
 - test commands, runtime commands, and relevant observability sources
 - known constraints, unavailable environments, and explicit exclusions
+- evidence sources this audit has, and which it does not: the repository, a
+  running test seat, read access to the deployed environment, production
+  telemetry
+
+Record the sources before selecting phases, not after. Several phases ask for
+evidence a repository cannot produce — a restore exercise, the privileges a
+deployed environment currently holds, whether the artifact that shipped is the
+one that was reviewed. A phase whose checks depend on a source this audit does
+not have is reported **PARTIAL**, never passed, naming the missing source and
+what was covered without it. PARTIAL is not `[CONDITIONAL]`: conditional means
+the phase did not apply, partial means it applied and could not be finished.
+
+Skip accounting is per phase, so without this a check that was never possible
+disappears inside a phase that reports as clean, and the audit claims coverage
+it never had.
 
 ## 3. Finding Standard
 
@@ -1498,9 +1513,11 @@ product-specific checklist:
 An audit is complete only when it records:
 
 - scope and tier
+- evidence sources the audit had, and which it lacked
 - overlay invariants checked and the evidence for each, or an explicit
   statement that no overlay applies
-- phases run, phases skipped, and rationale for every skip
+- phases run, phases skipped, phases PARTIAL, and the reason for every skip and
+  every PARTIAL
 - commands/tests/measurements run and their results
 - confirmed findings, fixed findings, accepted risks, and deferred work
 - verification evidence for every fix

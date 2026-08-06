@@ -31,7 +31,10 @@ running both.
 Audit one bounded change, feature, module, or user journey. A large codebase
 declared "reviewed" after a scan is the failure this protocol exists to prevent.
 Record: what is under review, the revision, the intended outcome, the data
-classifications involved, and the trust boundaries crossed.
+classifications involved, the trust boundaries crossed, and which evidence
+sources you have — the repository, a running test seat, read access to the
+deployed environment, production telemetry. Record the sources before you pick
+phases, because several phases ask for evidence a repository cannot produce.
 
 **2. Check for a domain overlay first, labeled or not.**
 
@@ -74,11 +77,12 @@ reproduced is PLAUSIBLE, and say which. Never present a hunch as a defect.
 
 **6. Close honestly.**
 
-State which phases ran, which were skipped, and why each was skipped — "not
-applicable" and "out of time" are both legitimate reasons and both belong in
-the record. State what the audit could not establish. If the project keeps an
-`AUDIT_STATUS.md`, update it. If it does not, offer one from `templates/` at the
-plugin root rather than writing it uninvited.
+State which phases ran, which were skipped, and which finished only partly
+because they needed evidence you did not have — those are PARTIAL, not passed.
+Give the reason in every case; "not applicable" and "out of time" are both
+legitimate and both belong in the record. State what the audit could not
+establish. If the project keeps an `AUDIT_STATUS.md`, update it. If it does not,
+offer one from `templates/` at the plugin root rather than writing it uninvited.
 
 ## When fixing what the audit found
 
