@@ -10,7 +10,10 @@ The example: **you run an online store, and you just added discount codes.**
 
 ## Step 1 — Run your first audit
 
-You need the protocol file where your agent can read it:
+You need the protocol file where your agent can read it. Using the Claude Code
+plugin instead? It carries the file — skip the `curl`, and restart Claude Code
+if you have just installed it. Nothing else in this walkthrough changes:
+`AUDIT_PROTOCOL.md` in the commands below resolves to the plugin's copy.
 
 ```bash
 curl -O https://raw.githubusercontent.com/sturec5/claude-audit-protocol/main/AUDIT_PROTOCOL.md
@@ -46,11 +49,14 @@ you what it skipped, ask again.
 
 | | |
 | --- | --- |
-| **T0** | documentation only — check the links and move on |
+| **T0** | documentation files and nothing else — check the links and move on |
 | **T1** | small, low-risk change |
 | **T2** | a real feature or new behavior |
 | **T3** | anything near money, login, private data, or a migration |
 | **T4** | a whole release |
+
+Tier follows the files a change touches, never what the lines look like. A
+mostly-documentation commit is not T0 if it also changes one source file.
 
 The agent picks one and you can overrule it. An overlay overrules you both,
 automatically, which is the point of Step 4.
@@ -284,10 +290,11 @@ much smaller claim, and it is the only honest one.
 ## If you want to go deeper
 
 [`AUDIT_PROTOCOL.md`](AUDIT_PROTOCOL.md) has all 54 phases. You still do not
-need to read it — but the change-triage table near the top is worth one look,
-because it shows how your agent decides what to run.
+need to read it. If you ever want to see how your agent picks phases, that is
+the change-triage table in §4.
 
 [`OVERLAY_TEMPLATE.md`](OVERLAY_TEMPLATE.md) is the blank version of what you
-wrote in Step 4. [`overlays/`](overlays/) has three fuller examples —
+wrote in Step 4. [`overlays/`](overlays/) has four fuller examples —
 [payments](overlays/payments.md), [access-control](overlays/access-control.md),
-and [data-pipeline](overlays/data-pipeline.md).
+[data-pipeline](overlays/data-pipeline.md), and
+[evidence-chain](overlays/evidence-chain.md).
