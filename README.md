@@ -122,6 +122,19 @@ After the restart there is nothing to copy. Ask in your own words:
 Audit the current change.
 ```
 
+Whether a skill loads on its own is the agent's judgement, not something this
+repository controls — and an agent confident it can review code will sometimes
+improvise one instead. The tell is in the output: a real run states a tier, the
+phases it ran, and the phases it skipped with reasons. If you get a review with
+none of that, name it and ask again:
+
+```
+Use the audit-protocol skill to audit the current change.
+```
+
+An audit that cannot tell you what it did not check is not this protocol,
+whatever else it got right.
+
 It ships one skill and nothing else — no hooks, no commands, no agents, no MCP
 servers. It grants no permissions and changes no behaviour until you ask for an
 audit.

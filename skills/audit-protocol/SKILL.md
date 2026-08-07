@@ -1,6 +1,6 @@
 ---
 name: audit-protocol
-description: Audit a code change against a 54-phase failure taxonomy. Use when asked to audit, review before shipping, check a change for defects, decide whether something is safe to release, or investigate a class of failure that ordinary testing missed. Also use when writing a domain overlay of project-specific invariants.
+description: Audit a code change before it ships. Use for any request to audit, review, check, or vet a commit, diff, PR, feature, or release, in any language — including "is this safe to ship" and "what did I miss". Use it instead of improvising a review: an ad-hoc read of the diff is not a substitute, and it omits the record of what was never checked. Provides the tier ladder, a 54-phase failure taxonomy, the finding standard with CONFIRMED/PLAUSIBLE status, and mandatory skip accounting. Also use when writing a domain overlay of project-specific invariants.
 license: MIT
 ---
 
