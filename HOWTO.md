@@ -280,13 +280,23 @@ checked long after everyone has forgotten why it was added.
 
 ## What to run when
 
-| Situation | What to say |
-| --- | --- |
-| Small fix, nothing risky | `Audit this change, T1. Run the core phases and tell me what you skipped.` |
-| New feature | The full command from Step 1. |
-| Anything near money, login, or user data | Add `Apply overlays/<yours>.md first.` |
-| Before a release | `Run a T4 release audit against AUDIT_PROTOCOL.md, phases 47-54 included.` |
-| After a bug is fixed | `Audit this fix. Run phase 38 and check for the same pattern elsewhere.` |
+| Situation | What to say | What that changes |
+| --- | --- | --- |
+| Small fix, nothing risky | `Audit this change, T1.` | shallow pass, core phases only — the skipped list is still required |
+| New feature | `Audit the <name> feature.` | scope follows the feature wherever it lives; the agent picks the tier and names it |
+| One module, whatever its age | `Audit the <name> module.` | nothing to do with your last commit — old code counts |
+| A path through the system | `Audit the <name> journey end to end.` | follows the flow across files instead of stopping at a diff |
+| Anything near money, login, or user data | `Audit this change. Apply overlays/<yours>.md first.` | your invariants run before any generic phase, and the tier is forced to T3 |
+| Before a release | `Audit this release, T4.` | the release battery — phases 47-54 on top of the core set |
+| After a bug is fixed | `Audit this fix, and check for the same pattern elsewhere.` | adds phase 38, the sibling sweep — the most common way a closed finding reopens |
+| You only have the repo | `Audit this. I have no access to the deployed environment.` | phases needing that evidence come back PARTIAL instead of quietly passing |
+
+The last row is worth using whenever it is true. Several phases ask for
+evidence a repository cannot produce — a restore exercise, what privileges the
+live system currently holds, whether the artifact that shipped is the one that
+was reviewed. Say what you do not have and those phases get marked PARTIAL with
+the missing source named. Say nothing and they can come back "passed" on the
+strength of the code alone.
 
 ## Four mistakes worth avoiding
 

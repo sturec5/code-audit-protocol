@@ -135,6 +135,25 @@ Use the audit-protocol skill to audit the current change.
 An audit that cannot tell you what it did not check is not this protocol,
 whatever else it got right.
 
+### What to type, and what it runs
+
+Two dials, both optional. **Scope** is what gets looked at; **tier** is how hard.
+Say either, both, or neither — say neither and the agent picks and tells you.
+
+| Type this | And it runs |
+| --- | --- |
+| `Audit the current change.` | agent picks scope and tier from the diff, and names both |
+| `Audit the checkout module.` | one module, however old the code in it is |
+| `Audit the signup journey end to end.` | one path through the system, across files |
+| `Audit this change, T1.` | your scope, kept shallow — core phases only |
+| `Audit the auth module, T3.` | both dials set: critical-path depth on one module |
+| `Audit this release, T4.` | the release battery, phases 47-54 included |
+| `Audit this fix, and check for the same pattern elsewhere.` | adds the sibling sweep a narrow fix usually misses |
+
+There is no "audit the whole project", on purpose. A codebase declared reviewed
+after one sweep is the failure this exists to prevent — name a part, then come
+back for the next part. [`HOWTO.md`](HOWTO.md) works one of these end to end.
+
 It ships one skill and nothing else — no hooks, no commands, no agents, no MCP
 servers. It grants no permissions and changes no behaviour until you ask for an
 audit.
