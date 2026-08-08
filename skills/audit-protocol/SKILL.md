@@ -27,13 +27,17 @@ running both.
 
 **1. Establish scope before looking at anything.**
 
-Audit one bounded change, feature, module, or user journey. A large codebase
-declared "reviewed" after a scan is the failure this protocol exists to prevent.
-Record: what is under review, the revision, the intended outcome, the data
-classifications involved, the trust boundaries crossed, and which evidence
-sources you have — the repository, a running test seat, read access to the
-deployed environment, production telemetry. Record the sources before you pick
-phases, because several phases ask for evidence a repository cannot produce.
+Audit one bounded change, feature, module, service, or user journey. A large
+codebase declared "reviewed" after a scan is the failure this protocol exists to
+prevent. If the request does not name a scope, choose one and say which you
+chose. Record: what is under review, the revision, the intended outcome, the
+data classifications involved, and the trust boundaries crossed.
+
+Then name your evidence sources before choosing a single phase: which of the
+repository, a running test seat, read access to the deployed environment, and
+production telemetry you have — and which you do not. A source you never named
+is a source you will not notice missing. You will run the phases that need it
+from the code alone and report them as passed.
 
 **2. Check for a domain overlay first, labeled or not.**
 
@@ -76,12 +80,24 @@ reproduced is PLAUSIBLE, and say which. Never present a hunch as a defect.
 
 **6. Close honestly.**
 
-State which phases ran, which were skipped, and which finished only partly
-because they needed evidence you did not have — those are PARTIAL, not passed.
-Give the reason in every case; "not applicable" and "out of time" are both
-legitimate and both belong in the record. State what the audit could not
-establish. If the project keeps an `AUDIT_STATUS.md`, update it. If it does not,
-offer one from `templates/` at the plugin root rather than writing it uninvited.
+Every audit ends with this block, in this order, however short the audit was:
+
+- **Evidence sources** — what you had, and what you lacked.
+- **Phases run** — numbers.
+- **Phases PARTIAL** — numbers, each naming the source it lacked and what you
+  covered without it. A phase whose checks needed a source you do not have
+  belongs here, not in "run" — including when nothing visibly blocked you. The
+  absence of a refusal is not the presence of evidence.
+- **Phases skipped** — numbers, each with a reason. "Not applicable" and "out of
+  time" are both legitimate.
+- **Could not establish** — what the audit leaves open.
+
+A report without this block is not an audit under this protocol, whatever it
+found. Findings alone are what an ordinary review produces; the account of what
+went unexamined is what makes it auditable.
+
+If the project keeps an `AUDIT_STATUS.md`, update it. If it does not, offer one
+from `templates/` at the plugin root rather than writing it uninvited.
 
 ## When fixing what the audit found
 

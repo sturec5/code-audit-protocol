@@ -61,6 +61,25 @@ mostly-documentation commit is not T0 if it also changes one source file.
 The agent picks one and you can overrule it. An overlay overrules you both,
 automatically, which is the point of Step 4.
 
+**"Scope" is what to look at, and it is a separate dial.** Nothing here is
+limited to your last commit — that is just the easiest thing to name. Any of
+these works:
+
+| Say this | And you get |
+| --- | --- |
+| `Audit the current change.` | the uncommitted diff, or the last commit |
+| `Audit the checkout module.` | one module, however old the code is |
+| `Audit the signup journey end to end.` | one path through the system, across files |
+| `Audit the payment retry feature.` | one feature, wherever it lives |
+| `Audit this release. T4.` | the release battery |
+
+You can set both dials in one sentence — `Audit the auth module, T3` — or set
+neither and let the agent choose and tell you what it chose.
+
+What you should not ask for is "audit the whole project". The protocol refuses
+that on purpose: a codebase declared reviewed after one sweep is the exact
+failure it exists to prevent. Name a part, and come back for the next part.
+
 **Second, the findings.** Each one looks like this:
 
 ```
