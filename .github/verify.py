@@ -37,8 +37,15 @@ md_files = [f for pat in ("*.md", "*/*.md", "*/*/*.md") for f in glob.glob(pat)]
 
 
 def github_anchor(heading):
+    # github-slugger strips this character class and then replaces each space
+    # individually, so a removed em dash leaves two spaces behind and produces
+    # two hyphens. Collapsing \s+ instead inverted this check for every heading
+    # with punctuation between two spaces — it accepted the fragment GitHub
+    # answers with a 404 and rejected the one GitHub actually serves. The house
+    # style puts an em dash in headings throughout, so that is most of them.
+    # Trailing hyphens are kept for the same reason: GitHub keeps them too.
     s = re.sub(r"[^\w\s-]", "", heading.strip().lower())
-    return re.sub(r"\s+", "-", s).strip("-")
+    return s.replace(" ", "-")
 
 
 anchors_of = {}

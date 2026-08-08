@@ -63,6 +63,11 @@ protocol. Use its change-triage table to select phases. Bias toward the higher
 tier when the change touches authentication, money, data loss, privacy,
 permissions, migrations, or a security boundary.
 
+Honor a tier the request names. Raise it anyway when an overlay invariant is in
+scope or the change touches one of those surfaces — but say you are raising it
+and why, rather than quietly running deeper than you were asked to. Lowering a
+tier the request names is not yours to do.
+
 **4. Run the phases against evidence, not against the happy path.**
 
 Read code, configuration, tests, deployment definitions, and observed behavior
@@ -83,6 +88,8 @@ reproduced is PLAUSIBLE, and say which. Never present a hunch as a defect.
 Every audit ends with this block, in this order, however short the audit was:
 
 - **Evidence sources** — what you had, and what you lacked.
+- **Overlay invariants** — which ran and the evidence for each, or that none
+  applied. They ran first, so they are accounted for first.
 - **Phases run** — numbers.
 - **Phases PARTIAL** — numbers, each naming the source it lacked and what you
   covered without it. A phase whose checks needed a source you do not have

@@ -148,7 +148,7 @@ Say either, both, or neither — say neither and the agent picks and tells you.
 | `Audit this change, T1.` | your scope, kept shallow — core phases only |
 | `Audit the auth module, T3.` | both dials set: critical-path depth on one module |
 | `Audit this release, T4.` | the release battery, phases 47-54 included |
-| `Audit this fix, and check for the same pattern elsewhere.` | adds the sibling sweep a narrow fix usually misses |
+| `Audit this fix, and check for the same pattern elsewhere.` | names the sibling sweep, which is already core for bug fixes — insurance, not an upgrade |
 
 There is no "audit the whole project", on purpose. A codebase declared reviewed
 after one sweep is the failure this exists to prevent — name a part, then come

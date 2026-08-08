@@ -36,14 +36,30 @@ Three things, in this order.
 
 ```
 Tier: T2 (new user-facing behavior)
-Phases run: 3 (business rules), 4 (input boundaries), 16 (data integrity),
-            17 (concurrency), 20 (test logic), 28 (data contracts)
-Phases skipped: 51-52 (no UI change), 49 (no migration), 47-48 (no auth change)
+Evidence sources: the repository, and a local test run. No access to the
+                  deployed environment, no production telemetry.
+
+Phases run:     24 (smoke test, first), 1-4 (build, static analysis, business
+                rules, input boundaries), 7 (money arithmetic), 16 (data
+                integrity), 17 (concurrency), 19 (known bug patterns),
+                20 (test logic), 28 (schema), 42 (finding hygiene)
+Phases PARTIAL: 53-54 — observability and delivery both want the running
+                system; only the declarations in the repository were read
+Phases skipped: 47-48 (no auth change), 49 (no migration), 51-52 (no UI
+                change), and 5-6, 8-15, 18, 21-23, 25-27, 29-41, 43-46, 50 —
+                nothing in this change reaches them
+Could not establish: whether the counter holds under real concurrent load
 ```
 
-That "skipped" line matters as much as the rest. It is the difference between
-*we checked and it was fine* and *nobody looked*. If your agent does not tell
-you what it skipped, ask again.
+Every one of the 54 is in exactly one of those four lines. That is the point of
+the format: *we checked and it was fine*, *we could not check*, and *nobody
+looked* are three different answers, and a report that blurs them is not
+auditable. If your agent gives you findings and no account of the rest, ask
+again.
+
+**PARTIAL is the line people skip.** A phase you could not finish is not a phase
+that passed. Notice that 53-54 landed there for a reason stated at the top — no
+deployed environment — which is why the evidence line comes first.
 
 **"Tier" is just how hard to look.** Five levels:
 
@@ -288,15 +304,20 @@ checked long after everyone has forgotten why it was added.
 | A path through the system | `Audit the <name> journey end to end.` | follows the flow across files instead of stopping at a diff |
 | Anything near money, login, or user data | `Audit this change. Apply overlays/<yours>.md first.` | your invariants run before any generic phase, and the tier is forced to T3 |
 | Before a release | `Audit this release, T4.` | the release battery — phases 47-54 on top of the core set |
-| After a bug is fixed | `Audit this fix, and check for the same pattern elsewhere.` | adds phase 38, the sibling sweep — the most common way a closed finding reopens |
+| After a bug is fixed | `Audit this fix, and check for the same pattern elsewhere.` | names phase 38 out loud; it is core for bug fixes already, so this is insurance against an agent that skipped it |
 | You only have the repo | `Audit this. I have no access to the deployed environment.` | phases needing that evidence come back PARTIAL instead of quietly passing |
 
-The last row is worth using whenever it is true. Several phases ask for
-evidence a repository cannot produce — a restore exercise, what privileges the
-live system currently holds, whether the artifact that shipped is the one that
-was reviewed. Say what you do not have and those phases get marked PARTIAL with
-the missing source named. Say nothing and they can come back "passed" on the
-strength of the code alone.
+The last row is worth using whenever it is true, but not because it switches the
+rule on. The rule is unconditional: several phases ask for evidence a repository
+cannot produce — a restore exercise, what privileges the live system currently
+holds, whether the artifact that shipped is the one that was reviewed — and a
+phase that needed evidence you do not have is PARTIAL, never passed, whether you
+said anything or not.
+
+You say it anyway for a different reason: it is how you find out whether the
+agent was already doing it. Name the gap, then check that the same phases come
+back PARTIAL with that source named. If they come back "passed" instead, the
+report is wrong and now you can see it.
 
 ## Four mistakes worth avoiding
 

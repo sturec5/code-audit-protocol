@@ -135,10 +135,13 @@ Choose relevant phases based on the change before reviewing details. Any domain
 overlay the change could plausibly touch runs on top of whatever this table
 selects, and runs first — see §5.
 
-Two phases run regardless of which row matches: Phase 19 (Known Bug Patterns)
-applies to every code change, and Phase 42 (Audit Registry And Finding
-Hygiene) applies whenever findings are recorded. A core phase not named by any
-matching row is not waived — it still runs at Release.
+Three phases run regardless of which row matches: Phase 24 (Smoke Test), which
+also runs before the rest for the reason given under "How to read this file";
+Phase 19 (Known Bug Patterns), on every code change; and Phase 42 (Audit
+Registry And Finding Hygiene), whenever findings are recorded. Not every row
+below lists 24 — it is selected by this paragraph, not by the table. A core
+phase not named by any matching row is not waived either; it still runs at
+Release.
 
 | Change type | Always consider |
 | --- | --- |

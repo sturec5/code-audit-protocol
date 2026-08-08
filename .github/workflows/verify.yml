@@ -8,6 +8,11 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # The job clones and runs two local scripts. Nothing it does needs write
+    # access to anything, and stating that is cheaper than relying on whatever
+    # the repository default happens to be on the day this goes public.
+    permissions:
+      contents: read
     steps:
       # Full history: the version-payload check asks when the current version
       # was last set, and the default shallow clone cannot answer that. The
