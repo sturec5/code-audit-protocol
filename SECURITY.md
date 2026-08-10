@@ -2,7 +2,7 @@
 
 ## Reporting a problem
 
-Open a [security advisory](https://github.com/sturec5/claude-audit-protocol/security/advisories/new)
+Open a [security advisory](https://github.com/sturec5/code-audit-protocol/security/advisories/new)
 for anything that should not be discussed in public. Anything else — a broken
 link, a wrong phase number, guidance that is simply mistaken — belongs in a
 normal issue.

@@ -16,7 +16,7 @@ if you have just installed it. Nothing else in this walkthrough changes:
 `AUDIT_PROTOCOL.md` in the commands below resolves to the plugin's copy.
 
 ```bash
-curl -O https://raw.githubusercontent.com/sturec5/claude-audit-protocol/main/AUDIT_PROTOCOL.md
+curl -O https://raw.githubusercontent.com/sturec5/code-audit-protocol/main/AUDIT_PROTOCOL.md
 ```
 
 Then type this to your agent. This is the whole command — there is nothing to

@@ -5,7 +5,7 @@ the two or three things that would be a genuine disaster **in your project
 specifically**.
 
 ![works with](https://img.shields.io/badge/works%20with-any%20coding%20agent-2ea44f)
-![verify](https://github.com/sturec5/claude-audit-protocol/actions/workflows/verify.yml/badge.svg)
+![verify](https://github.com/sturec5/code-audit-protocol/actions/workflows/verify.yml/badge.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 ![phases](https://img.shields.io/badge/phases-54-slateblue)
 ![overlays](https://img.shields.io/badge/worked%20overlays-4-teal)
@@ -85,7 +85,7 @@ and you can edit it.
 Put the file in your repository:
 
 ```bash
-curl -O https://raw.githubusercontent.com/sturec5/claude-audit-protocol/main/AUDIT_PROTOCOL.md
+curl -O https://raw.githubusercontent.com/sturec5/code-audit-protocol/main/AUDIT_PROTOCOL.md
 ```
 
 Then say this in your agent session:
@@ -104,8 +104,8 @@ Installs it once and makes it available in every project, so you never copy the
 file again:
 
 ```
-/plugin marketplace add sturec5/claude-audit-protocol
-/plugin install audit-protocol@claude-audit-protocol
+/plugin marketplace add sturec5/code-audit-protocol
+/plugin install audit-protocol@code-audit-protocol
 ```
 
 **Restart Claude Code before you use it.** The skill is not registered in the
