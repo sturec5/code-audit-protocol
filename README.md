@@ -24,6 +24,36 @@ specifically**.
 
 > Community project. Not affiliated with or endorsed by Anthropic.
 
+## Thirty seconds
+
+```bash
+curl -O https://raw.githubusercontent.com/sturec5/code-audit-protocol/main/AUDIT_PROTOCOL.md
+```
+
+Then, to your agent:
+
+```
+Audit the current change against AUDIT_PROTOCOL.md. Tell me the tier, which
+phases you ran, and which you skipped and why.
+```
+
+That is the whole integration. There is nothing else to install. What comes back
+ends like this:
+
+```
+Phases run:     24, 1-4, 7, 16, 17, 19, 20, 28, 42
+Phases PARTIAL: 53-54 — both want the running system; only the declarations
+                in the repository were read
+Phases skipped: 47-49, 51-52 (no auth, migration or UI change), and 5-6, 8-15,
+                18, 21-27, 29-41, 43-46, 50 — nothing here reaches them
+Could not establish: whether the counter holds under real concurrent load
+```
+
+**Those last three lines are the product.** Findings are what any review gives
+you. An account of what went unexamined, and why, is what makes the answer worth
+anything — and it is the part you will not get by asking an agent to "review
+this".
+
 ## The 60-second version
 
 You changed some code. Before it ships, something should ask *what did I miss?*
@@ -82,21 +112,9 @@ and you can edit it.
 
 ### Any agent — Cursor, Codex, Windsurf, Copilot, Claude Code, anything
 
-Put the file in your repository:
-
-```bash
-curl -O https://raw.githubusercontent.com/sturec5/code-audit-protocol/main/AUDIT_PROTOCOL.md
-```
-
-Then say this in your agent session:
-
-```
-Audit the current change against AUDIT_PROTOCOL.md.
-Pick the tier and the phases from the change-triage table, tell me which
-phases you skipped and why, and report findings in the finding standard.
-```
-
-That is the whole integration. The agent reads a file and follows it.
+The `curl` and the prompt at the top of this page, and nothing else. The agent
+reads a file and follows it. Commit `AUDIT_PROTOCOL.md` and everyone on the
+project has it.
 
 ### Claude Code — optional convenience
 
