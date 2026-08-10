@@ -319,7 +319,7 @@ agent was already doing it. Name the gap, then check that the same phases come
 back PARTIAL with that source named. If they come back "passed" instead, the
 report is wrong and now you can see it.
 
-## Four mistakes worth avoiding
+## Five mistakes worth avoiding
 
 **Filling all eight slots on day one.** Six to eight is where a mature overlay
 lands, not where a new one starts. Begin with two or three you can defend; an
@@ -336,6 +336,16 @@ that checked twenty and told you which eight it skipped and why.
 **Treating the protocol as a certificate.** It is a list of questions. Running
 it does not make software safe; it makes the gaps visible and named. That is a
 much smaller claim, and it is the only honest one.
+
+**Letting the overlay age quietly.** Look at what the example above puts under
+*Explicitly not covered*: fraud and abuse, "accepted risk for now, revisit at
+scale". That was true the day it was written. It stops being true on some
+ordinary Tuesday, and nothing announces it — the line goes on reading like a
+current decision long after the system it described is gone. Same for a "prove
+it" clause that names code you have since deleted: the invariant looks checked
+and has quietly stopped being checked. So audit the overlay when you audit with
+it. A deferral whose reason has expired is a finding against the overlay, and
+the thing it was deferring runs.
 
 ## If you want to go deeper
 

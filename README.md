@@ -140,6 +140,10 @@ Use the audit-protocol skill to audit the current change.
 An audit that cannot tell you what it did not check is not this protocol,
 whatever else it got right.
 
+The plugin ships one skill and nothing else — no hooks, no commands, no agents,
+no MCP servers. It grants no permissions and changes no behaviour until you ask
+for an audit.
+
 ### What to type, and what it runs
 
 Two dials, both optional. **Scope** is what gets looked at; **tier** is how hard.
@@ -158,10 +162,6 @@ Say either, both, or neither — say neither and the agent picks and tells you.
 There is no "audit the whole project", on purpose. A codebase declared reviewed
 after one sweep is the failure this exists to prevent — name a part, then come
 back for the next part. [`HOWTO.md`](HOWTO.md) works one of these end to end.
-
-It ships one skill and nothing else — no hooks, no commands, no agents, no MCP
-servers. It grants no permissions and changes no behaviour until you ask for an
-audit.
 
 **New here?** [`HOWTO.md`](HOWTO.md) walks through one real example end to end —
 run an audit, read the output, write your first overlay, see what changes.
