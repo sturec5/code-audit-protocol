@@ -25,6 +25,11 @@
 #     metadata passes.
 #   - anything gitignored, which includes denylist.local itself.
 #   - a commit's diff. Only the message, the author, and the current file text.
+#   - three files excluded by name: check.sh and denylist.example, which
+#     document the format with placeholders and would fail on their own
+#     examples, and LICENSE, which has to carry a real copyright holder. That
+#     last one is the only shipped file holding an identity on purpose, so it
+#     is the one exclusion worth remembering when you fork this.
 #
 #   ./check.sh          scan the repo
 #   ./check.sh --list   print the patterns and exit

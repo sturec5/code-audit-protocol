@@ -126,6 +126,14 @@ try:
             f"version drift: plugin.json {plug.get('version')!r} vs "
             f"marketplace entry {entry.get('version')!r}"
         )
+    # The catalog's own version is kept in lockstep with the plugin's by hand and
+    # was guarded by nothing, so it was free to go stale while the checked pair
+    # stayed honest.
+    if mkt.get("metadata", {}).get("version") != plug.get("version"):
+        fail(
+            f"version drift: plugin.json {plug.get('version')!r} vs "
+            f"marketplace metadata {mkt.get('metadata', {}).get('version')!r}"
+        )
 except Exception as e:  # noqa: BLE001 - a parse failure is already reported above
     fail(f"manifest cross-check skipped: {e}")
 
@@ -188,6 +196,28 @@ else:
                 f"changed since ({shown}). Bump the version, or an installed copy cannot "
                 f"receive this."
             )
+
+# --- the README's badge numbers are claims, so check them ------------------
+# Hand-maintained counts on the one file every visitor reads first are pure
+# drift surface. Asserting them costs four lines and turns an advertisement
+# into a checked statement.
+readme = open("README.md").read()
+badges = {
+    "phases": (
+        r"badge/phases-(\d+)-",
+        len(set(phases)),
+    ),
+    "worked overlays": (
+        r"badge/worked%20overlays-(\d+)-",
+        len(glob.glob("overlays/*.md")),
+    ),
+}
+for label, (pattern, actual) in badges.items():
+    m = re.search(pattern, readme)
+    if not m:
+        fail(f"README.md: the {label} badge is gone, or its URL changed shape")
+    elif int(m.group(1)) != actual:
+        fail(f"README.md: {label} badge says {m.group(1)}, repository has {actual}")
 
 # --- mermaid well-formed -------------------------------------------------
 for f in sorted(md_files):

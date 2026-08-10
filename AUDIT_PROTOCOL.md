@@ -119,7 +119,11 @@ Every finding should include:
 - **User/system impact:** what fails, who is affected, and how severe it is.
 - **Evidence:** reproduction, trace, test, screenshot, log, query, or code path.
 - **Status and confidence:** CONFIRMED (reproduced) or PLAUSIBLE (reasoned but
-  not reproduced), with the confidence behind the claim.
+  not reproduced), with the confidence behind the claim. Two further statuses
+  belong to the finding's later life rather than to the audit that raised it:
+  CLOSED once a fix is verified, and ACCEPTED once someone has decided
+  deliberately not to fix it and recorded why. Both are set in the registry;
+  see phase 42.
 - **Root cause:** not just the visible symptom.
 - **Fix direction:** smallest safe correction and any compatibility concern.
 - **Verification:** test or observation that proves the correction.

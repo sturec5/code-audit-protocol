@@ -271,7 +271,9 @@ the checklist they run against, and the place your own invariants live.
 | [`OVERLAY_TEMPLATE.md`](OVERLAY_TEMPLATE.md) | You, once — when you write your first overlay. |
 | [`overlays/`](overlays/) | Four worked examples, for reference. |
 | [`templates/`](templates/) | Report formats to copy into your repo: one finding, and the standing "can this ship?" record. |
-| `check.sh`, `denylist.example` | Only if you fork this and publish your own version. |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | You, if you want to add an overlay — start here, not with a pull request. |
+| [`SECURITY.md`](SECURITY.md) | You, if you want to know what executes here, or need to report something. |
+| `check.sh`, `check_test.sh`, `denylist.example` | Only if you fork this and publish your own version. |
 | `.claude-plugin/`, `skills/` | The Claude Code plugin wrapper. |
 
 ## Three things that make it worth using

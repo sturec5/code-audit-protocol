@@ -98,6 +98,24 @@ Match the existing voice: second person, imperative, no hedging, no
 exclamation. The protocol tells someone what to inspect and why — it does not
 motivate them.
 
+## Versioning, and why CI will fail you for skipping it
+
+If your change touches `skills/`, `AUDIT_PROTOCOL.md`, `OVERLAY_TEMPLATE.md`,
+`overlays/` or `templates/`, bump the version in **both** `.claude-plugin/plugin.json`
+and `.claude-plugin/marketplace.json`. Minor for new or changed content, patch
+for a correction. Everything else — this file, the README, the gates, the
+workflow — is not payload and needs no bump.
+
+`verify.py` enforces this and will fail the build if you forget, which mostly
+matters to overlay contributions, since `overlays/` is payload and an overlay is
+the contribution asked for first here.
+
+The rule is not bureaucracy. The plugin cache is keyed on version, so payload
+that changes without a version bump reaches nobody who already installed:
+`claude plugin update` compares versions, finds none, reports success and
+changes nothing. That happened here for nine consecutive commits before anyone
+noticed.
+
 ## What will not be merged
 
 - Tool-specific or framework-specific instructions in `AUDIT_PROTOCOL.md`. The
