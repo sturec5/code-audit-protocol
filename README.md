@@ -45,7 +45,7 @@ Phases run:     24, 1-4, 7, 16, 17, 19, 20, 28, 42
 Phases PARTIAL: 53-54 — both want the running system; only the declarations
                 in the repository were read
 Phases skipped: 47-49, 51-52 (no auth, migration or UI change), and 5-6, 8-15,
-                18, 21-27, 29-41, 43-46, 50 — nothing here reaches them
+                18, 21-23, 25-27, 29-41, 43-46, 50 — nothing here reaches them
 Could not establish: whether the counter holds under real concurrent load
 ```
 

@@ -125,6 +125,20 @@ older version than the plugin ships — which reads as abandoned, and is the one
 version surface a visitor sees before any other. It has already happened twice
 here, once for six releases in a row.
 
+## A note on the history
+
+The history was rewritten once, immediately before this repository was made
+public, to remove a second machine's username from two commits and a private
+term from two commit bodies. Every commit from that point back was reauthored.
+
+The cost is that several commit bodies cite short hashes from before the
+rewrite, and those resolve to nothing on GitHub. They are not deletions or
+missing work — the same commits are all still here under different hashes, in
+the same order. If you are following a reference and it 404s, that is why.
+
+It is mentioned because finding it yourself and not being told would reasonably
+look like something else.
+
 ## What will not be merged
 
 - Tool-specific or framework-specific instructions in `AUDIT_PROTOCOL.md`. The
