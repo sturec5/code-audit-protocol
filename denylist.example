@@ -36,3 +36,17 @@ NUMBERS='\b12,?345\b|\b67 findings\b'
 # arrows and typographic quotes, which are fine in English text.
 # Empty by default so the check is opt-in.
 LOCALE_CHARS=''
+
+# Everything above is matched against file contents, commit messages and ref
+# names. This last one is different in kind.
+#
+# Every commit's author and committer must appear here, formatted exactly as
+# git records it: `Name <email>`, one per line. It is an allowlist, not a
+# denylist — anything not listed fails. That inversion is deliberate. A
+# denylist can only catch an identity someone thought to write down, and the
+# leak this exists to prevent was a second machine's username that happened to
+# be on the list by luck. Next time it will not be.
+#
+# Empty disables the check, and check.sh will say so rather than implying the
+# authorship was verified.
+EXPECTED_IDENTITY='Your Name <you@example.com>'

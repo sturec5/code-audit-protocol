@@ -14,9 +14,11 @@ than hours, and no bounty.
 
 Almost all of this repository is prose. Two files execute:
 
-- `check.sh` — a local grep over the working tree, run by the maintainer before
+- `check.sh` — a local grep over the working tree, plus a read of commit
+  messages, ref names and commit authorship, run by the maintainer before
   publishing. It *sources* `denylist.local` as shell, so treat that file as
-  code you wrote rather than as data. `check.sh` writes nothing itself.
+  code you wrote rather than as data. `check.sh` writes nothing itself and runs
+  no git command that alters a repository.
 - `.github/verify.py` — a link, manifest, and structure check. Standard library
   only, no network, no writes.
 

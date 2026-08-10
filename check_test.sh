@@ -142,7 +142,40 @@ case_ 'measured figure is found' 1 \
 case_ 'non-English letter is found' 1 \
   'deny_only LOCALE_CHARS "$(printf "[\303\251]")"; printf "caf\303\251 notes\n" > a.md'
 
-# 8 — the gate must never report a pass over nothing. Excluding denylist.local
+# 8 — a push transfers the message and the author, not just the tree. The gate
+# was blind to both, and shipped a foreign machine's username 2 commits deep
+# with every file scan green.
+commit_as() { # $1 name, $2 email, $3 message
+  git add -A >/dev/null 2>&1
+  git -c user.name="$1" -c user.email="$2" commit -qm "$3"
+}
+
+case_ 'denylisted term in a commit message' 1 \
+  'deny secretproject; echo clean > a.md
+   commit_as t t@example.com "this one mentions secretproject in the subject"'
+
+case_ 'denylisted term in a branch name' 1 \
+  'deny secretproject; echo clean > a.md
+   commit_as t t@example.com "ordinary message"
+   git branch secretproject-wip'
+
+# 9 — authorship is an allowlist, so the case that matters is the identity the
+# denylist would never have caught. "stranger" is on no list here.
+case_ 'undeclared commit author is rejected' 1 \
+  'deny_only INSENSITIVE nomatchhere
+   printf "EXPECTED_IDENTITY=%s\n" "\"expected <ok@example.com>\"" >> denylist.local
+   echo clean > a.md
+   commit_as stranger stranger@example.com "ordinary message"'
+
+# ...and the mirror, or the check above would also pass while rejecting
+# everything, which is a different way of verifying nothing.
+case_ 'declared commit author passes' 0 \
+  'deny_only INSENSITIVE nomatchhere
+   printf "EXPECTED_IDENTITY=%s\n" "\"expected <ok@example.com>\"" >> denylist.local
+   echo clean > a.md
+   commit_as expected ok@example.com "ordinary message"'
+
+# 10 — the gate must never report a pass over nothing. Excluding denylist.local
 # through .git/info/exclude rather than .gitignore leaves the repository with
 # no scannable file at all, which is the condition under test.
 case_ 'nothing to scan is an error' 2 \
@@ -156,7 +189,7 @@ case_ 'nothing to scan is an error' 2 \
 case_ 'non-git checkout still scans' 1 \
   'deny secretproject; echo "secretproject" > a.md' nogit
 
-# 9 — an unrecognised argument once fell through to a full scan.
+# 11 — an unrecognised argument once fell through to a full scan.
 printf '\n'
 if ! tmp=$(mk); then
   printf '  FAIL  %-52s fixture not created\n' 'unknown argument is rejected'

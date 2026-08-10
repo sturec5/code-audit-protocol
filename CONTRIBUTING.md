@@ -7,15 +7,28 @@ its place.
 ## Before anything else
 
 ```bash
-cp denylist.example denylist.local    # first time only, then fill it in
-git config core.hooksPath .githooks   # first time only, per clone
+cp denylist.example denylist.local     # first time only, then fill it in
+git config core.hooksPath .githooks    # per clone
+git config user.name  "your-handle"    # per clone — must match EXPECTED_IDENTITY
+git config user.email "you@example.com"
 ./check.sh
 ```
 
+The identity lines are not ceremony. A clone inherits your *global* git config,
+so unless you set it per clone, the name on your commits is whatever you use for
+private work — which is how a real name reaches a public repository without ever
+appearing in a diff. That happened here, and the gate caught it on the first
+commit after the check existed.
+
 This repository has to stay generic to be worth anything. `check.sh` scans for
 project names, domain vocabulary, real file paths, measured figures, and —
-when configured — non-English text. Run it before every push; it has to
-exit 0.
+when configured — non-English text. It reads the same terms across commit
+messages and ref names, and checks every commit's author against
+`EXPECTED_IDENTITY`, because publishing a repository publishes all of that and
+no diff will ever show it to you. Run it before every push; it has to exit 0.
+
+Its closing line names which of those checks ran and which are not configured.
+Read it: a pass over a check you never set up is not a pass.
 
 The second line installs [`.githooks/pre-push`](.githooks/pre-push), which runs
 that gate plus `verify.py` and `check_test.sh` and aborts the push if any of

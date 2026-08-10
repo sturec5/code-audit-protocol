@@ -9,13 +9,22 @@
 # Run before every push. Exit 0 means the mechanical check passed — it does not
 # mean the text is clean. A human still reads it.
 #
+# It reads four surfaces, because publishing a repository publishes all four:
+# working-tree contents, commit messages, ref names, and commit authorship. A
+# term scrubbed from the files still ships if it sits in a commit message, and
+# no diff will ever show it to you. That is not hypothetical — it is how this
+# check came to exist.
+#
+# Authorship is checked differently from the rest. A denylist cannot catch an
+# identity nobody thought to list, and the leak that prompted this was another
+# machine's username, denylisted only by luck. So authorship is compared against
+# EXPECTED_IDENTITY and anything else fails, whether or not it is on the list.
+#
 # What it does NOT look at, stated so the pass is not read as wider than it is:
-#   - git history. A term scrubbed from the working tree is still published,
-#     because a push transfers reachable history. Check that separately before
-#     making a repository public.
 #   - binary files. grep -I skips them, so a project name in PDF text or image
 #     metadata passes.
 #   - anything gitignored, which includes denylist.local itself.
+#   - a commit's diff. Only the message, the author, and the current file text.
 #
 #   ./check.sh          scan the repo
 #   ./check.sh --list   print the patterns and exit
@@ -39,7 +48,7 @@ if [ ! -f denylist.local ]; then
   exit 2
 fi
 
-INSENSITIVE='' SENSITIVE='' NUMBERS='' LOCALE_CHARS=''
+INSENSITIVE='' SENSITIVE='' NUMBERS='' LOCALE_CHARS='' EXPECTED_IDENTITY=''
 # shellcheck source=denylist.example
 . ./denylist.local
 
@@ -124,12 +133,69 @@ scan() { # label, pattern, grep-flags
   fi
 }
 
+# The same failure handling as scan(), reading a blob on stdin instead of a file
+# list. Commit messages and ref names are text that ships; they just do not live
+# in the working tree.
+scan_text() { # label, pattern, grep-flags, text
+  local label="$1" pattern="$2" flags="$3" text="$4" hits rc
+  hits=$(printf '%s\n' "$text" | grep -n $flags -E -- "$pattern"); rc=$?
+  if [ "$rc" -ge 2 ]; then
+    printf '\n  %s — SCAN DID NOT RUN (bad pattern)\n' "$label"
+    fail=2
+    return
+  fi
+  if [ -n "$hits" ]; then
+    printf '\n  %s\n' "$label"
+    printf '%s\n' "$hits" | sed 's/^/    /'
+    fail=1
+  fi
+}
+
+# Every message line carries its own short sha, so a hit names the commit to fix
+# rather than a line number in a blob nobody can navigate.
+history_messages() {
+  git log --all --format='%h%x1f%B%x1e' 2>/dev/null \
+    | awk -v RS='\036' -F'\037' 'NF>1 { n=split($2, L, "\n"); for (i=1;i<=n;i++) if (L[i] != "") print $1 " " L[i] }'
+}
+
+RAN='' SKIPPED=''
+ran()  { RAN="$RAN${RAN:+, }$1"; }
+skip() { SKIPPED="$SKIPPED${SKIPPED:+, }$1"; }
+
 printf 'check.sh — scanning %s files\n' "$(printf '%s\n' "$FILES" | grep -c .)"
 
-[ -n "$PAT_I" ]        && scan 'project / agent / domain names' "$PAT_I" '-Ii'
-[ -n "$PAT_S" ]        && scan 'case-sensitive terms'           "$PAT_S" '-I'
-[ -n "$PAT_N" ]        && scan 'measured figures'               "$PAT_N" '-Ii'
-[ -n "$PAT_L" ]        && scan 'non-English letters'            "$PAT_L" '-I'
+if [ -n "$PAT_I" ]; then scan 'project / agent / domain names' "$PAT_I" '-Ii'; ran 'names'; else skip 'names'; fi
+if [ -n "$PAT_S" ]; then scan 'case-sensitive terms'           "$PAT_S" '-I';  ran 'case-sensitive'; else skip 'case-sensitive'; fi
+if [ -n "$PAT_N" ]; then scan 'measured figures'               "$PAT_N" '-Ii'; ran 'figures'; else skip 'figures'; fi
+if [ -n "$PAT_L" ]; then scan 'non-English letters'            "$PAT_L" '-I';  ran 'non-English'; else skip 'non-English'; fi
+
+# --- what a push transfers besides the files -------------------------------
+if git rev-parse --git-dir >/dev/null 2>&1 && [ -n "$(git rev-list -n1 --all 2>/dev/null)" ]; then
+  TERMS=$(printf '%s\n%s' "$PAT_I" "$PAT_S" | grep -v '^$' | paste -sd'|' - | sed 's/||*/|/g; s/^|//; s/|$//')
+  if [ -n "$TERMS" ]; then
+    scan_text 'commit messages' "$TERMS" '-i' "$(history_messages)"
+    scan_text 'ref names'       "$TERMS" '-i' "$(git for-each-ref --format='%(refname)' 2>/dev/null)"
+    ran 'messages, refs'
+  else
+    skip 'messages, refs'
+  fi
+
+  if [ -n "$EXPECTED_IDENTITY" ]; then
+    # Not a denylist check. Anything that is not a declared identity fails,
+    # because the identity you never thought to list is the one that leaks.
+    STRAY=$(git log --all --format='%an <%ae>%n%cn <%ce>' 2>/dev/null | sort -u | grep -vxF "$EXPECTED_IDENTITY")
+    if [ -n "$STRAY" ]; then
+      printf '\n  commit authorship — not in EXPECTED_IDENTITY\n'
+      printf '%s\n' "$STRAY" | sed 's/^/    /'
+      fail=1
+    fi
+    ran 'authorship'
+  else
+    skip 'authorship'
+  fi
+else
+  skip 'messages, refs, authorship (no git history here)'
+fi
 
 if [ "$fail" -eq 2 ]; then
   printf '\nERROR — a pattern in denylist.local is not valid regex, so that scan\n'
@@ -139,6 +205,8 @@ fi
 
 if [ "$fail" -eq 0 ]; then
   printf '\nPASS — no denylisted term found.\n'
+  printf '  checked      : %s\n' "${RAN:-nothing}"
+  [ -n "$SKIPPED" ] && printf '  not configured: %s\n' "$SKIPPED"
   printf 'This is the mechanical gate only. Read the diff before publishing.\n'
   exit 0
 fi
