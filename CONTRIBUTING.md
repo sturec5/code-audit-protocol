@@ -116,6 +116,15 @@ that changes without a version bump reaches nobody who already installed:
 changes nothing. That happened here for nine consecutive commits before anyone
 noticed.
 
+**Maintainer step, and nothing enforces it.** After a bump lands on `main`, tag
+it and open a release: `git tag -a vX.Y.Z && git push origin vX.Y.Z`, then
+`gh release create vX.Y.Z`. CI checks that the version moved with the payload;
+it cannot check that you then published it, because the tag does not exist yet
+when the workflow runs. Skip it and the repository's landing page advertises an
+older version than the plugin ships — which reads as abandoned, and is the one
+version surface a visitor sees before any other. It has already happened twice
+here, once for six releases in a row.
+
 ## What will not be merged
 
 - Tool-specific or framework-specific instructions in `AUDIT_PROTOCOL.md`. The
