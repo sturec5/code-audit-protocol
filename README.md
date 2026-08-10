@@ -116,6 +116,11 @@ The same applies to updates, which do say so. A session reads the skill once, at
 startup, and keeps serving that copy: a plugin updated mid-session goes on
 behaving like the version it began with until you restart.
 
+It holds in reverse too, and this one has no warning at all: a session goes on
+offering the skill after the plugin's directory has been moved or deleted, and
+only finds out when it tries to read the taxonomy. If an audit tells you it
+cannot reach the protocol, restart before concluding the install is broken.
+
 After the restart there is nothing to copy. Ask in your own words:
 
 ```

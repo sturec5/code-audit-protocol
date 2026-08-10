@@ -185,6 +185,21 @@ Not every overlay is filed as one. A contributor guide, an agent instructions
 file, or an architecture note is often where a project's invariants are
 already written down — take them from there and run them first.
 
+**An overlay ages with the project, and it is the one document in the loop that
+nobody audits.** Before running it, read its own scoping: the invariants it
+declares out of scope, the phases it defers, the conditions it says do not apply
+here, and the evidence each "prove it" clause points at. Every one of those was
+a true statement about a system that has since changed. A deferral whose stated
+reason has expired is a finding against the overlay, and the phase it was
+deferring runs. A proof procedure that names code no longer in the repository is
+an invariant that has quietly stopped being checked, however green the audit
+looks.
+
+This matters more than it sounds. Overlays are what make an audit specific to a
+project, so an overlay that describes a system the project has outgrown makes
+the audit confidently wrong rather than merely generic — and it does so while
+reporting that your own rules were honored.
+
 Build your own with [OVERLAY_TEMPLATE.md](OVERLAY_TEMPLATE.md). Four worked
 examples ship alongside this protocol:
 

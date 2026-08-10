@@ -15,9 +15,17 @@ its phases back to the user. If you cannot read it, say so and stop: an audit
 run from memory of the taxonomy is not this protocol and must not be reported
 as one.
 
-If the project under audit keeps its own `AUDIT_PROTOCOL.md`, read that one
-instead and say which copy you used. A repository copy is pinned to that project
-and may have been amended; the plugin's is identical everywhere.
+If the project under audit keeps its own copy of **this taxonomy**, read that
+copy instead and say which you used: it is pinned to the project and may have
+been amended, while the plugin's is identical everywhere.
+
+That is a different thing from a project that keeps its own **audit document** —
+overlays, a triage table, a chosen subset of phases, house rules. That one does
+not replace the taxonomy, it layers on top. Read both: run its overlays first,
+take phase selection from it, and take what each phase actually checks from
+here. "The project's file wins" is about two copies of one document drifting
+apart. Applied to a project's own audit layer it reads as permission to skip the
+taxonomy, which is the audit-from-memory outcome the paragraph above forbids.
 
 The phase numbers are a catalog, not a running order. Select through the
 triage table, and prefer the shallow member of a paired phase at T2 over
@@ -47,6 +55,11 @@ contributor guide, an agent instructions file, an architecture note, a
 house-rules document. Recognize them by shape rather than filename — imperative
 rules about this project's own concepts, which would be meaningless in another
 repository. Treat that file as the overlay and run it before any generic phase.
+
+Audit the overlay itself while you are in it — its deferrals, its out-of-scope
+claims, and whether its proof procedures still name code that exists. The
+protocol's §5 says why an expired deferral is a finding rather than a decision
+you inherit.
 
 A change touching an overlay invariant is T3 regardless of diff size, and an
 overlay violation is a Blocker even when the code is correct and the tests pass.
