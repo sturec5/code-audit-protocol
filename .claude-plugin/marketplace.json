@@ -11,7 +11,7 @@
     {
       "name": "audit-protocol",
       "source": "./",
-      "description": "Audit a change against 54 failure classes with tiers, a finding standard, and change triage. Domain overlays run first and force critical-path treatment.",
+      "description": "Audits a code change against a 54-phase failure taxonomy and reports what it did not check, not just what it found. Domain overlays run first and force critical-path treatment.",
       "version": "1.8.1",
       "author": {
         "name": "sturec5"
