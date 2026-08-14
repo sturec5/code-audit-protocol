@@ -7,8 +7,8 @@
 ![works with](https://img.shields.io/badge/works%20with-any%20coding%20agent-2ea44f)
 ![verify](https://github.com/sturec5/code-audit-protocol/actions/workflows/verify.yml/badge.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue)
-![phases](https://img.shields.io/badge/security%20phases-54-slateblue)
-![zero-install](https://img.shields.io/badge/zero%20install-one%20file-success)
+![phases](https://img.shields.io/badge/phases-54-slateblue)
+![overlays](https://img.shields.io/badge/worked%20overlays-4-teal)
 ![agents](https://img.shields.io/badge/agents-Claude%20·%20Cursor%20·%20Copilot-important)
 
 > ### This is not a Claude Code tool
