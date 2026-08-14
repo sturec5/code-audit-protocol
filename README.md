@@ -1,44 +1,54 @@
 # The Audit Protocol
 
-A checklist your coding agent runs before you ship — plus a way to write down
-the two or three things that would be a genuine disaster **in your project
-specifically**.
+**LLM-assisted code auditing for AI developers.** Before you ship, your Claude Code / Cursor agent runs 54 security & reliability checks, then tells you exactly what it *did not* check and why — plus a way to codify your project's specific failure modes.
+
+> **Built for argument culture:** We believe the best reviews challenge the work, not the person. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — this is where rigorous, logic-driven contributors belong.
 
 ![works with](https://img.shields.io/badge/works%20with-any%20coding%20agent-2ea44f)
 ![verify](https://github.com/sturec5/code-audit-protocol/actions/workflows/verify.yml/badge.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue)
-![phases](https://img.shields.io/badge/phases-54-slateblue)
-![overlays](https://img.shields.io/badge/worked%20overlays-4-teal)
-![commands](https://img.shields.io/badge/commands%20included-none-lightgrey)
+![phases](https://img.shields.io/badge/security%20phases-54-slateblue)
+![zero-install](https://img.shields.io/badge/zero%20install-one%20file-success)
+![agents](https://img.shields.io/badge/agents-Claude%20·%20Cursor%20·%20Copilot-important)
 
 > ### This is not a Claude Code tool
 >
-> It is **one markdown file**. Any coding agent that can read a file in your
-> repository can run it — Claude Code, Cursor, Codex, Windsurf, Copilot, Aider,
-> Zed, or whatever you use next year. There is nothing to install, no runtime,
-> no dependency, and no API to call.
+> It is **one markdown file**. Any coding agent that can read a file in your repository can run it — Claude Code, Cursor, Codex, Windsurf, Copilot, Aider, Zed, or whatever you use next year. There is nothing to install, no runtime, no dependency, and no API to call.
 >
-> A Claude Code plugin ships here as a convenience for people who want it in
-> every project without copying a file. It is optional, and skipping it costs
-> you nothing.
+> A Claude Code plugin ships here as a convenience for people who want it in every project without copying a file. It is optional, and skipping it costs you nothing.
+>
+> **Community project.** Not affiliated with or endorsed by Anthropic.
 
-> Community project. Not affiliated with or endorsed by Anthropic.
+## Why you'll use this
 
-## Thirty seconds
+- **Zero magic.** One markdown file — no runtime, no API, no installation required. Works with Claude Code, Cursor, Copilot, or any AI coding agent.
+- **Accountability.** Gets back: *"Phases run: 1-7, 16, 23 | Phases PARTIAL: 42 | Phases skipped: 8-15, 47-54 and why"* — not just "looks good."
+- **Your disasters first.** Codify the 2-3 failures that would end your project. Every PR touching your rules gets full critical-path review, no matter how small the diff.
+- **For rigorous teams.** Built by and for developers who value logical debate over authority — see our [Code of Conduct](CODE_OF_CONDUCT.md).
 
+## Quick Install (30 seconds)
+
+**Option A: Claude Code** (recommended)
+```
+/plugin install audit-protocol
+```
+Then restart Claude Code and ask:
+```
+Audit the current change.
+```
+
+**Option B: Any agent** (Cursor, Copilot, Windsurf, etc.)
 ```bash
 curl -O https://raw.githubusercontent.com/sturec5/code-audit-protocol/main/AUDIT_PROTOCOL.md
 ```
-
-Then, to your agent:
-
+Commit it, then ask your agent:
 ```
-Audit the current change against AUDIT_PROTOCOL.md. Tell me the tier, which
-phases you ran, and which you skipped and why.
+Audit the current change against AUDIT_PROTOCOL.md.
 ```
 
-That is the whole integration. There is nothing else to install. What comes back
-ends like this:
+## Thirty seconds
+
+**What you get back:**
 
 ```
 Phases run:     24, 1-4, 7, 16, 17, 19, 20, 28, 42
