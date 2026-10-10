@@ -510,6 +510,17 @@ and never converted into silent corruption.
 - retried operations are idempotent or protected by an idempotency key
 - logs retain a correlation identifier without recording sensitive data
 
+For each user journey selected for this audit, where applicable:
+- Exercise normal use, one representative failure, and recovery after
+  the failure clears.
+- Activate the actual recovery control and verify the intended result;
+  rendering a retry button does not establish that retry works.
+- Reuse relevant evidence. Identify source-only, simulated, and executed
+  checks, including environment/version limits. Missing execution
+  evidence remains explicit.
+- Stay within the agreed scope. Do not enumerate every failure
+  combination or build new infrastructure merely for completeness.
+
 **Output:**
 
 - failure trigger, blast radius, recovery behavior, and observable evidence
