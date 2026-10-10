@@ -1,7 +1,7 @@
 {
   "name": "audit-protocol",
   "description": "Audits a code change against a 54-phase failure taxonomy and reports what it did not check, not just what it found. Domain overlays run first and force critical-path treatment.",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "author": {
     "name": "sturec5"
   },

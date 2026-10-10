@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "A 54-phase technology-neutral audit taxonomy, plus domain overlays for the failure classes generic checklists cannot cover",
-    "version": "1.8.1"
+    "version": "1.9.0"
   },
   "plugins": [
     {
       "name": "audit-protocol",
       "source": "./",
       "description": "Audits a code change against a 54-phase failure taxonomy and reports what it did not check, not just what it found. Domain overlays run first and force critical-path treatment.",
-      "version": "1.8.1",
+      "version": "1.9.0",
       "author": {
         "name": "sturec5"
       },
